@@ -1,0 +1,8 @@
+__eth__device_0x40028000 = 0x40028000;
+__rcc__device_0x40023800 = 0x40023800;
+__syscfg__device_0x40013800 = 0x40013800;
+__nvic__device_0xE000E100 = 0xE000E100;
+__flash__device_0x40023c00 = 0x40023c00;
+__core__device_0xE000E008 = 0xE000E008;
+__itm__device_0xe0000000 = 0xe0000000;
+__rng__device_0x50060800 = 0x50060800;
