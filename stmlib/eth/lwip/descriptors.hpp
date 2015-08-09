@@ -8,6 +8,10 @@
 #ifndef ETH_LWIP_DRIVER_UTIL_HPP_
 #define ETH_LWIP_DRIVER_UTIL_HPP_
 
+#include <stmlib_config.hpp>
+
+#ifndef STMLIB_LWIP_ONETHREAD
+
 #include <stmlib/eth_registers.hpp>
 #include <stmlib/eth/dma_descriptors.hpp>
 #include <stmlib/eth/lwip/custom_buffer.hpp>
@@ -158,5 +162,7 @@ namespace eth { namespace lwip {
 	msg_t transmit( pbuf* buf );
 
 } }
+
+#endif
 
 #endif /* ETH_LWIP_DRIVER_UTIL_HPP_ */

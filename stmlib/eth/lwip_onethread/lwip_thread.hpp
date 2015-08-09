@@ -1,11 +1,17 @@
-#pragma once
-#include <microptp/ports/cortex_m4_inthread/cortex_m4.hpp>
-#include <microptp/util/static_union.hpp>
-#include <thread.hpp>
-#include <lwip/tcpip.h>
+#ifndef STMLIB_ETH_LWIP_ONETHREAD_LWIP_THREAD_HPP__
+#define STMLIB_ETH_LWIP_ONETHREAD_LWIP_THREAD_HPP__
+
+#include <stmlib_config.hpp>
+#ifdef STMLIB_LWIP_ONETHREAD
+
+#include <microptp/ports/cortex_m4_onethread/port.hpp>
+#include <microlib/variant.hpp>
 #include <microlib/pool.hpp>
 #include <microlib/static_heap.hpp>
+#include <thread.hpp>
+#include <lwip/tcpip.h>
 #include <cpp_wrappers/ch.hpp>
+#include <stmlib/stmtypes.hpp>
 
 namespace eth {
 
@@ -32,6 +38,14 @@ namespace eth {
 		namespace detail {
 
 			struct timeout_data {
+				timeout_data() = default;
+				timeout_data(const timeout_data&) = default;
+				timeout_data(timeout_data&&) = default;
+				timeout_data& operator=(const timeout_data&) = default;
+				timeout_data(void(*fn_)(void*), void* arg_, uint32 when_)
+					: fn(fn_), arg(arg_), when(when_)
+				{}
+
 				void(*fn)(void*);
 				void* arg;
 				uint32 when;
@@ -70,11 +84,16 @@ namespace eth {
 			void set_ip(ip_addr ip);
 			void set_netmask(ip_addr netmask);
 			void set_gateway(ip_addr gateway);
+			void set_mac_address(const uint8 (&arr)[6]);
 
 			// in-thread routines
 		public:
-			void add_timeout_thread(uint32 when, void (*fn)(void*), void* arg);
+			void add_timeout_thread   (uint32 when, void (*fn)(void*), void* arg);
 			void remove_timeout_thread(void(*fn)(void*), void* arg);
+
+		public:
+			void post_event(ThreadEvents);
+			void post_event_i(ThreadEvents);
 
 		private:
 			static err_t ethernetif_init_static(struct netif* netif);
@@ -89,11 +108,10 @@ namespace eth {
 			void process_ptp();
 
 			void on_event(ThreadEvents event);
-			void on_tcpip_msg(tcpip_msg& msg);
 
 		private:
 			struct thread_message {
-				util::static_union< ThreadEvents, tcpip_msg > payload_;
+				util::static_union< ThreadEvents > payload_;
 				util::pool_ptr<thread_message> lifetime_;
 			};
 
@@ -111,8 +129,15 @@ namespace eth {
 
 			uptp::Config ptp_config_;
 			uptp::SystemPort ptp_clock_;
+
+			uint8 ptp_button_debounce_;
+			bool ptp_clock_enabled_;
 		};
 		
 	}
 
 }
+
+#endif
+
+#endif

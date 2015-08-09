@@ -4,6 +4,10 @@
  *  Created on: 17.12.2014
  *      Author: Michael
  */
+#include <stmlib_config.hpp>
+
+#ifndef STMLIB_LWIP_ONETHREAD
+
 #include <stmlib/stmtypes.hpp>
 #include <stmlib/eth/dma_descriptors.hpp>
 #include <stmlib/eth/lwip/descriptors.hpp>
@@ -34,7 +38,7 @@
 #include <stmlib/trace.h>
 
 // FIXME
-#include <microptp/ports/cortex_m4/cortex_m4.hpp>
+#include <microptp/ports/cortex_m4/port.hpp>
 
 namespace eth { namespace lwip {
 
@@ -162,8 +166,6 @@ namespace eth { namespace lwip {
 			netif->mtu = 1500;
 			netif->flags |= NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_IGMP;
 
-			NETIF_INIT_SNMP(netif, snmp_ifType_ethernet_csmacd, 100000000);
-
 			netif->output = etharp_output;
 			netif->linkoutput = low_level_output;
 
@@ -286,7 +288,7 @@ namespace eth { namespace lwip {
 				started_phy_read = true;
 			}
 
-			if(link_status && interface.dhcp->state == DHCP_BOUND && !dhcp_bound) {
+			if(link_status && interface.dhcp->state == DHCP_STATE_BOUND && !dhcp_bound) {
 				ptp_port.ip_addr_changed(interface.ip_addr);
 				dhcp_bound = true;
 			}
@@ -328,4 +330,4 @@ void isr<nvic::IRQ::ETH>()
 	CH_IRQ_EPILOGUE();
 }
 
-
+#endif

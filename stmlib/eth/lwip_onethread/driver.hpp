@@ -9,12 +9,14 @@
 #define ETH_LWIP_DRIVER_HPP_
 
 #include <stmlib_config.hpp>
-
-#ifndef STMLIB_LWIP_ONETHREAD
+#ifdef STMLIB_LWIP_ONETHREAD
 
 namespace eth { namespace lwip {
 
-	void start();
+	void configure_phy();
+	void start_mac_dma(uint16 phystats, struct netif& interface);
+	void resume_rx();
+
 
 } }
 
