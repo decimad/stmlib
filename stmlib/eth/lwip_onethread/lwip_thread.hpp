@@ -8,6 +8,7 @@
 #include <microlib/variant.hpp>
 #include <microlib/pool.hpp>
 #include <microlib/static_heap.hpp>
+#include <microlib/circular_buffer.hpp>
 #include <thread.hpp>
 #include <lwip/tcpip.h>
 #include <cpp_wrappers/ch.hpp>
@@ -18,8 +19,6 @@ namespace eth {
 	namespace lwip {
 
 		enum class ThreadEvents {
-			Received,
-			Transmitted
 		};
 
 		struct ip_addr {
@@ -91,9 +90,21 @@ namespace eth {
 			void add_timeout_thread   (uint32 when, void (*fn)(void*), void* arg);
 			void remove_timeout_thread(void(*fn)(void*), void* arg);
 
+			// Event Handling
 		public:
-			void post_event(ThreadEvents);
+			using thread_message = util::static_union< ThreadEvents >;
+			using message_ptr = util::pool_ptr<thread_message>;
+			message_ptr acquire_message();
+			message_ptr acquire_message_i();
+
+			void post_message  (message_ptr msg);
+			void post_message_i(message_ptr msg);
+
+			void post_event  (ThreadEvents);
 			void post_event_i(ThreadEvents);
+
+			void on_rx();
+			void on_tx();
 
 		private:
 			static err_t ethernetif_init_static(struct netif* netif);
@@ -110,15 +121,11 @@ namespace eth {
 			void on_event(ThreadEvents event);
 
 		private:
-			struct thread_message {
-				util::static_union< ThreadEvents > payload_;
-				util::pool_ptr<thread_message> lifetime_;
-			};
-
 			util::pool< thread_message, 8 > message_pool_;
+			util::circular_buffer2<util::pool_ptr<thread_message>, 8> mailbox_;
 			util::static_heap< detail::timeout_data, 8, detail::time_overflow_compare_struct > unprecise_timers_;
 
-			chibios_rt::MailboxBuffer<32> mailbox_;
+			//chibios_rt::MailboxBuffer<32> mailbox_;
 
 			ip_addr ip_; //(0, 0, 0, 0);
 			ip_addr netmask_; //(255, 255, 255, 0);

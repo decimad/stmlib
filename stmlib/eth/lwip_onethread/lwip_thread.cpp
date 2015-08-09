@@ -101,12 +101,6 @@ namespace eth { namespace lwip {
 	void LwipThread::on_event(ThreadEvents event)
 	{
 		switch (event) {
-		case ThreadEvents::Received:
-			rx_walk_descriptors(&interface_);
-			break;
-		case ThreadEvents::Transmitted:
-			tx_walk_descriptors();
-			break;
 		}
 	}
 
@@ -129,7 +123,7 @@ namespace eth { namespace lwip {
 		if(unprecise_timers_.size()) {
 			auto next = unprecise_timers_.root().when;
 
-			while (unprecise_timers_.size() && detail::time_overflow_compare(unprecise_timers_.root().when, now)) {
+			while (unprecise_timers_.size() && detail::time_overflow_compare<uint32>(unprecise_timers_.root().when, now)) {
 				auto fun = unprecise_timers_.root().fn;
 				auto arg = unprecise_timers_.root().arg;
 				unprecise_timers_.pop();
@@ -185,30 +179,64 @@ namespace eth { namespace lwip {
 		}
 	}
 
-	void LwipThread::post_event(ThreadEvents ev)
+	LwipThread::message_ptr LwipThread::acquire_message()
 	{
 		chSysLock();
-		auto msgptr = message_pool_.make();
+		auto ptr = message_pool_.make();
 		chSysUnlock();
-		if(msgptr) {
-			msgptr->payload_.to_type<ThreadEvents>(ev);
-			thread_message* bareptr = msgptr.get_payload();
-			msgptr->lifetime_ = std::move(msgptr);
-			chSysLock();
-			mailbox_.post(reinterpret_cast<msg_t>(bareptr), TIME_INFINITE);
-			chSysUnlock();
+		return std::move(ptr);
+	}
+
+	LwipThread::message_ptr LwipThread::acquire_message_i()
+	{
+		return message_pool_.make();
+	}
+
+	enum class EventMasks : uint32 {
+		Rx = 1,
+		Tx = 2,
+		Msg = 4
+	};
+
+	void LwipThread::post_message(message_ptr msg)
+	{
+		if (mailbox_.push(std::move(msg))) {
+			chEvtSignal(get_thread(), (eventmask_t)EventMasks::Msg);
+		}
+	}
+
+	void LwipThread::post_message_i(message_ptr msg)
+	{
+		if (mailbox_.push(std::move(msg))) {
+			chEvtSignalI(get_thread(), (eventmask_t)EventMasks::Msg);
+		}
+	}
+
+	void LwipThread::post_event(ThreadEvents ev)
+	{
+		auto msg = acquire_message();
+		if (msg) {
+			msg->to_type<ThreadEvents>(ev);
+			post_message(std::move(msg));
 		}
 	}
 
 	void LwipThread::post_event_i(ThreadEvents ev)
 	{
-		auto msgptr = message_pool_.make();
-		if(msgptr) {
-			msgptr->payload_.to_type<ThreadEvents>(ev);
-			thread_message* bareptr = msgptr.get_payload();
-			msgptr->lifetime_ = std::move(msgptr);
-			mailbox_.postI(reinterpret_cast<msg_t>(bareptr));
+		auto msg = acquire_message();
+
+		if (msg) {
+			msg->to_type<ThreadEvents>(ev);
+			mailbox_.push(std::move(msg));
 		}
+	}
+
+	void LwipThread::on_rx() {
+		chEvtSignalI(get_thread(), (eventmask_t)EventMasks::Rx);
+	}
+
+	void LwipThread::on_tx() {
+		chEvtSignalI(get_thread(), (eventmask_t)EventMasks::Tx);
 	}
 
 	msg_t LwipThread::operator()()
@@ -222,19 +250,28 @@ namespace eth { namespace lwip {
 
 		while (true) {
 			msg_t msg;
-			auto result = mailbox_.fetch(&msg, std::min<uint32>(get_next_timer(), MS2ST(100)));
-
-			if (result == RDY_OK) {
-				// we received a message
-				util::pool_ptr<thread_message> ptr = std::move(static_cast<thread_message*>(reinterpret_cast<void*>(msg))->lifetime_);
-
-				if (ptr->payload_.is<ThreadEvents>()) {
-					on_event(ptr->payload_.as<ThreadEvents>());
+			auto result = chEvtWaitAnyTimeout((eventmask_t)EventMasks::Msg | (eventmask_t)EventMasks::Rx | (eventmask_t)EventMasks::Tx, std::min<uint32>(get_next_timer(), MS2ST(100)));
+			switch (result) {
+			case (eventmask_t)EventMasks::Msg:
+				{
+					while (mailbox_.size()) {
+						auto ptr = std::move(mailbox_.front());
+						chSysLock();
+						mailbox_.pop();
+						chSysUnlock();
+						// do something with ptr
+						chSysLock();
+						ptr.clear();
+						chSysUnlock();
+					}
 				}
-
-				chSysLock();
-				ptr.clear();
-				chSysUnlock();
+				break;
+			case (eventmask_t)EventMasks::Rx:
+				rx_walk_descriptors(&interface_);
+				break;
+			case (eventmask_t)EventMasks::Tx:
+				tx_walk_descriptors();
+				break;
 			}
 
 			if(started_phy_read) {
@@ -282,14 +319,14 @@ void isr<nvic::IRQ::ETH>()
 		// At least 1 frame was received
 		chSysLockFromIsr();
 		eth::device.dmasr <<= eth::fields::dmasr::nis(1) | eth::fields::dmasr::rs(1);	// clear rs bit
-		eth::lwip::LwipThread::get().post_event_i(eth::lwip::ThreadEvents::Received);
+		eth::lwip::LwipThread::get().on_rx();
 		chSysUnlockFromIsr();
 	}
 
 	if (dma_status.field<eth::fields::dmasr::ts>()) {
 		chSysLockFromIsr();
 		eth::device.dmasr <<= eth::fields::dmasr::nis(1) | eth::fields::dmasr::ts(1);	// clear ts bit
-		eth::lwip::LwipThread::get().post_event_i(eth::lwip::ThreadEvents::Transmitted);
+		eth::lwip::LwipThread::get().on_tx();
 		chSysUnlockFromIsr();
 	}
 
