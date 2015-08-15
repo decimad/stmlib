@@ -28,38 +28,39 @@ namespace rcc {
 	void enable_gpio() {
 		using namespace gpio;
 		using port_array = typename detail::port_array_from_pins< gpio::detail::empty_port_array, PinsListPack... >::type;
+		using namespace ulib::meta;
 
 		uint32 mask = 0;
 
-		if( meta::get<port_array,0>::value != 0) {
+		if( get<port_array,0>::value != 0) {
 			mask |= 1 << 0;
 		}
 
-		if( meta::get<port_array,1>::value != 0) {
+		if( get<port_array,1>::value != 0) {
 			mask |= 1 << 1;
 		}
 
-		if( meta::get<port_array,2>::value != 0) {
+		if( get<port_array,2>::value != 0) {
 			mask |= 1 << 2;
 		}
 
-		if( meta::get<port_array,3>::value != 0) {
+		if( get<port_array,3>::value != 0) {
 			mask |= 1 << 3;
 		}
 
-		if( meta::get<port_array,4>::value != 0) {
+		if( get<port_array,4>::value != 0) {
 			mask |= 1 << 4;
 		}
 
-		if( meta::get<port_array,5>::value != 0) {
+		if( get<port_array,5>::value != 0) {
 			mask |= 1 << 5;
 		}
 
-		if( meta::get<port_array,6>::value != 0) {
+		if( get<port_array,6>::value != 0) {
 			mask |= 1 << 6;
 		}
 
-		if( meta::get<port_array,7>::value != 0) {
+		if( get<port_array,7>::value != 0) {
 			mask |= 1 << 7;
 		}
 

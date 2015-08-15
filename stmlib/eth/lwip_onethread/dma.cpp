@@ -166,7 +166,7 @@ namespace eth { namespace lwip {
 	// Custom buffers pool
 	//
 
-	using rx_pool_type = util::pool< custom_buffer_type, 32 >;
+	using rx_pool_type = ulib::pool< custom_buffer_type, 32 >;
 	rx_pool_type rx_buffer_pool;
 
 	void reuse_buffer( custom_buffer_ptr ptr );
@@ -202,7 +202,7 @@ namespace eth { namespace lwip {
 	lwip_stats stats;
 
 	const uint8 num_rx_dma_descriptors = 8;
-	util::intrusive_ringbuffer<receive_descriptor, 8> rx_descriptor_ring;
+	ulib::intrusive_ringbuffer<receive_descriptor, 8> rx_descriptor_ring;
 
 	void intrusive_ring_set_next( receive_descriptor* descr, receive_descriptor* next )
 	{
@@ -354,7 +354,7 @@ namespace eth { namespace lwip {
 	// TX DMA Ring
 	//
 
-	util::intrusive_ringbuffer< transmit_descriptor, 8 > tx_descriptor_ring;
+	ulib::intrusive_ringbuffer< transmit_descriptor, 8 > tx_descriptor_ring;
 
 	void intrusive_ring_set_next( transmit_descriptor* descr, transmit_descriptor* next )
 	{

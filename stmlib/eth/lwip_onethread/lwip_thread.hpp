@@ -9,6 +9,7 @@
 #include <microlib/pool.hpp>
 #include <microlib/static_heap.hpp>
 #include <microlib/circular_buffer.hpp>
+#include <microlib/util.hpp>
 #include <thread.hpp>
 #include <lwip/tcpip.h>
 #include <cpp_wrappers/ch.hpp>
@@ -50,7 +51,7 @@ namespace eth {
 				uint32 when;
 			};
 
-			template< typename T, typename S = typename std::enable_if<std::is_unsigned<T>::value>::type >
+			template< typename T, typename S = typename ulib::enable_if_t<std::is_unsigned<T>::value> >
 			bool time_overflow_compare(T a, T b)
 			{
 				return T(b - a) <= (std::numeric_limits<T>::max() / 2);
@@ -87,13 +88,17 @@ namespace eth {
 
 			// in-thread routines
 		public:
+			// I'd like a different timeout interface eventually, but this one is
+			// better suited for lwip for now. Work on the mailing list is underway
+			// to change this.
 			void add_timeout_thread   (uint32 when, void (*fn)(void*), void* arg);
 			void remove_timeout_thread(void(*fn)(void*), void* arg);
+			void update_timeout_thread(uint32 when, void(*fn)(void*), void* arg);
 
 			// Event Handling
 		public:
-			using thread_message = util::static_union< ThreadEvents >;
-			using message_ptr = util::pool_ptr<thread_message>;
+			using thread_message = ulib::static_union< ThreadEvents >;
+			using message_ptr = ulib::pool_ptr<thread_message>;
 			message_ptr acquire_message();
 			message_ptr acquire_message_i();
 
@@ -121,11 +126,9 @@ namespace eth {
 			void on_event(ThreadEvents event);
 
 		private:
-			util::pool< thread_message, 8 > message_pool_;
-			util::circular_buffer2<util::pool_ptr<thread_message>, 8> mailbox_;
-			util::static_heap< detail::timeout_data, 8, detail::time_overflow_compare_struct > unprecise_timers_;
-
-			//chibios_rt::MailboxBuffer<32> mailbox_;
+			ulib::pool< thread_message, 8 > message_pool_;
+			ulib::circular_buffer2<ulib::pool_ptr<thread_message>, 8> mailbox_;
+			ulib::static_heap< detail::timeout_data, 8, detail::time_overflow_compare_struct > unprecise_timers_;
 
 			ip_addr ip_; //(0, 0, 0, 0);
 			ip_addr netmask_; //(255, 255, 255, 0);

@@ -16,13 +16,13 @@ namespace eth { namespace lwip {
 	struct custom_buffer;
 
 	using custom_buffer_type = custom_buffer<256>;
-	using custom_buffer_ptr = util::pool_ptr< custom_buffer_type >;
+	using custom_buffer_ptr = ulib::pool_ptr< custom_buffer_type >;
 
 	struct transmit_callback
 	{
 		// Fixme: we're currently relying on the callback destination
 		// to wait until operations complete.
-		util::function<void(uint64 time, custom_buffer_ptr)> func;
+		ulib::function<void(uint64 time, custom_buffer_ptr)> func;
 	};
 
 	template< size_t Size /*, size_t Alignment = 4*/ >
@@ -82,7 +82,7 @@ namespace eth { namespace lwip {
 		// transmission could be sized accordingly and could store
 		// a larger amount of enhancement data without blocking rx buffers.
 		//
-		using enhancement_type = util::static_union<uint64, transmit_callback>;
+		using enhancement_type = ulib::static_union<uint64, transmit_callback>;
 
 		bool is_enhanced() const {
 			return pbuf.type == PBUF_POOL;
@@ -140,9 +140,6 @@ namespace eth { namespace lwip {
 		using storage_type = typename std::aligned_storage<Size, 4 /*Alignment*/>::type;
 		storage_type data_;
 	};
-
-//	using custom_buffer_type = custom_buffer<256>;
-//	using custom_buffer_ptr = util::pool_ptr< custom_buffer_type >;
 
 	custom_buffer_ptr request_buffer();
 	void custom_buffer_reuse_chain(custom_buffer_ptr ptr);

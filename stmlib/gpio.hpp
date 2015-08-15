@@ -186,7 +186,7 @@ namespace gpio {
 		template< typename Array, uint8 port, uint8 pin, typename... tail >
 		struct port_array_from_pins< Array, static_pin< port, pin >, tail... >
 		{
-			using type = typename port_array_from_pins< typename meta::set< Array, port, meta::get< Array, port >::value | (static_cast<uint16>(1)<<pin) >::type, tail... >::type;
+			using type = typename port_array_from_pins< typename ulib::meta::set< Array, port, ulib::meta::get< Array, port >::value | (static_cast<uint16>(1)<<pin) >::type, tail... >::type;
 		};
 
 		// translate port_pack<> and pin_list<> into a plain list of pins
@@ -208,43 +208,44 @@ namespace gpio {
 			using type = Array;
 		};
 
-		using empty_port_array = meta::static_array<uint16, 0, 0, 0, 0, 0, 0, 0, 0>;
+		using empty_port_array = ulib::meta::static_array<uint16, 0, 0, 0, 0, 0, 0, 0, 0>;
 	}
 
 	template< typename... PinsListPack, typename... Args >
 	void configure( const Args&... args ) {
 		using port_array = typename detail::port_array_from_pins< detail::empty_port_array, PinsListPack... >::type;
+		using namespace ulib::meta;
 
-		if( meta::get<port_array,0>::value != 0) {
-			detail::func( (Args::template run_static<0, meta::get<port_array,0>::value>(args), 0 )... );
+		if( get<port_array,0>::value != 0) {
+			detail::func( (Args::template run_static<0, get<port_array,0>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,1>::value != 0) {
-			detail::func( (Args::template run_static<1, meta::get<port_array,1>::value>(args), 0 )... );
+		if( get<port_array,1>::value != 0) {
+			detail::func( (Args::template run_static<1, get<port_array,1>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,2>::value != 0) {
-			detail::func( (Args::template run_static<2, meta::get<port_array,2>::value>(args), 0 )... );
+		if( get<port_array,2>::value != 0) {
+			detail::func( (Args::template run_static<2, get<port_array,2>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,3>::value != 0) {
-			detail::func( (Args::template run_static<3, meta::get<port_array,3>::value>(args), 0 )... );
+		if( get<port_array,3>::value != 0) {
+			detail::func( (Args::template run_static<3, get<port_array,3>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,4>::value != 0) {
-			detail::func( (Args::template run_static<4, meta::get<port_array,4>::value>(args), 0 )... );
+		if( get<port_array,4>::value != 0) {
+			detail::func( (Args::template run_static<4, get<port_array,4>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,5>::value != 0) {
-			detail::func( (Args::template run_static<5, meta::get<port_array,5>::value>(args), 0 )... );
+		if( get<port_array,5>::value != 0) {
+			detail::func( (Args::template run_static<5, get<port_array,5>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,6>::value != 0) {
-			detail::func( (Args::template run_static<6, meta::get<port_array,6>::value>(args), 0 )... );
+		if( get<port_array,6>::value != 0) {
+			detail::func( (Args::template run_static<6, get<port_array,6>::value>(args), 0 )... );
 		}
 
-		if( meta::get<port_array,7>::value != 0) {
-			detail::func( (Args::template run_static<7, meta::get<port_array,7>::value>(args), 0 )... );
+		if( get<port_array,7>::value != 0) {
+			detail::func( (Args::template run_static<7, get<port_array,7>::value>(args), 0 )... );
 		}
 	}
 
