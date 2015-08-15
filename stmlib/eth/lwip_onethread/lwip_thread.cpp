@@ -87,7 +87,6 @@ namespace eth { namespace lwip {
 		lwip_init();
 
 		std::copy(mac_addr_, mac_addr_ + 6, interface_.hwaddr);
-		std::copy(mac_addr_, mac_addr_ + 6, ptp_config_.mac_addr.begin());
 
 		interface_.hwaddr_len = 6;
 
@@ -306,7 +305,7 @@ namespace eth { namespace lwip {
 
 			if(link_status && interface_.dhcp->state == DHCP_STATE_BOUND && !dhcp_bound) {
 				trace_printf(0, "DHCP bound!\n");
-				ptp_clock_.ip_addr_changed(interface_.ip_addr);
+				ptp_clock_.network_changed(interface_.ip_addr, reinterpret_cast<std::array<uint8,6>&>(interface_.hwaddr));
 				dhcp_bound = true;
 			}
 
