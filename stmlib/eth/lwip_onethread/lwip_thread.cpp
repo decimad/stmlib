@@ -7,6 +7,7 @@
 #include <stmlib/gpio.hpp>
 #include <stmlib/nvic.hpp>
 #include <stmlib/rcc.hpp>
+#include <stmlib/trace.h>
 #include <lwip/init.h>
 #include <lwip/udp.h>
 #include <lwip/timers.h>
@@ -31,7 +32,9 @@ namespace eth { namespace lwip {
 	}
 
 	LwipThread::LwipThread()
+#if STMLIB_RUN_PTP
 		: ptp_clock_(ptp_config_)
+#endif
 	{
 	}
 
@@ -159,6 +162,7 @@ namespace eth { namespace lwip {
 
 	}
 
+#if STMLIB_RUN_PTP
 	void LwipThread::init_ptp()
 	{
 		rcc::enable_gpio<pins::red, pins::yellow, pins::green, pins::button>();
@@ -186,6 +190,7 @@ namespace eth { namespace lwip {
 			ptp_clock_enabled_ = !ptp_clock_enabled_;
 		}
 	}
+#endif
 
 	LwipThread::message_ptr LwipThread::acquire_message()
 	{
@@ -250,7 +255,10 @@ namespace eth { namespace lwip {
 	msg_t LwipThread::operator()()
 	{
 		init_lwip();
+
+#if STMLIB_RUN_PTP
 		init_ptp();
+#endif
 		
 		bool started_phy_read = false;
 		bool link_status = false;
@@ -305,12 +313,17 @@ namespace eth { namespace lwip {
 
 			if(link_status && interface_.dhcp->state == DHCP_STATE_BOUND && !dhcp_bound) {
 				trace_printf(0, "DHCP bound!\n");
+#if STMLIB_RUN_PTP
 				ptp_clock_.network_changed(interface_.ip_addr, reinterpret_cast<std::array<uint8,6>&>(interface_.hwaddr));
+#endif
 				dhcp_bound = true;
 			}
 
 			process_timers();
+
+#if STMLIB_RUN_PTP
 			process_ptp();
+#endif
 
 		}
 

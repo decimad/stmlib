@@ -1,10 +1,13 @@
 #ifndef STMLIB_ETH_LWIP_ONETHREAD_LWIP_THREAD_HPP__
 #define STMLIB_ETH_LWIP_ONETHREAD_LWIP_THREAD_HPP__
 
-#include <stmlib_config.hpp>
+#include <stmlib/config.hpp>
 #ifdef STMLIB_LWIP_ONETHREAD
 
+#if STMLIB_RUN_PTP
 #include <microptp/ports/cortex_m4_onethread/port.hpp>
+#endif
+
 #include <microlib/variant.hpp>
 #include <microlib/pool.hpp>
 #include <microlib/static_heap.hpp>
@@ -12,6 +15,7 @@
 #include <microlib/util.hpp>
 #include <thread.hpp>
 #include <lwip/tcpip.h>
+#include <lwip/ip.h>
 #include <cpp_wrappers/ch.hpp>
 #include <stmlib/stmtypes.hpp>
 
@@ -137,11 +141,12 @@ namespace eth {
 
 			netif interface_;
 
+#if STMLIB_RUN_PTP
 			uptp::Config ptp_config_;
 			uptp::SystemPort ptp_clock_;
-
 			uint8 ptp_button_debounce_;
 			bool ptp_clock_enabled_;
+#endif
 		};
 		
 	}
