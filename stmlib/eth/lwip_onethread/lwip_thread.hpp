@@ -42,7 +42,7 @@ namespace eth {
 		namespace detail {
 
 			struct timeout_data {
-				timeout_data() = default;
+				timeout_data() : fn(0), arg(0), when(0) {};
 				timeout_data(const timeout_data&) = default;
 				timeout_data(timeout_data&&) = default;
 				timeout_data& operator=(const timeout_data&) = default;
@@ -76,12 +76,10 @@ namespace eth {
 			LwipThread();
 			msg_t operator()();
 
+			static LwipThread singleton_thread_;
+
 			// singleton anti-pattern
-			static LwipThread& get()
-			{
-				static LwipThread thread;
-				return thread;
-			}
+			static LwipThread& get();
 
 			// pre-run config
 		public:

@@ -39,6 +39,7 @@ namespace eth { namespace lwip {
 	}
 
 	err_t low_level_output(struct netif *netif, struct pbuf *p) {
+		(void) netif;
 		return transmit(p);
 	}
 
@@ -131,15 +132,12 @@ namespace eth { namespace lwip {
 	void LwipThread::process_timers()
 	{
 		uint32 now = chTimeNow();
-		if(unprecise_timers_.size()) {
-			auto next = unprecise_timers_.top_element().when;
 
-			while (unprecise_timers_.size() && detail::time_overflow_compare<uint32>(unprecise_timers_.top_element().when, now)) {
-				auto fun = unprecise_timers_.top_element().fn;
-				auto arg = unprecise_timers_.top_element().arg;
-				unprecise_timers_.pop();
-				fun(arg);
-			}
+		while (unprecise_timers_.size() && detail::time_overflow_compare<uint32>(unprecise_timers_.top_element().when, now)) {
+			auto fun = unprecise_timers_.top_element().fn;
+			auto arg = unprecise_timers_.top_element().arg;
+			unprecise_timers_.pop();
+			fun(arg);
 		}
 	}
 
@@ -265,7 +263,6 @@ namespace eth { namespace lwip {
 		bool dhcp_bound = false;
 
 		while (true) {
-			msg_t msg;
 			auto result = chEvtWaitAnyTimeout((eventmask_t)EventMasks::Msg | (eventmask_t)EventMasks::Rx | (eventmask_t)EventMasks::Tx, std::min<uint32>(get_next_timer(), MS2ST(100)));
 			switch (result) {
 			case (eventmask_t)EventMasks::Msg:
@@ -324,10 +321,20 @@ namespace eth { namespace lwip {
 #if STMLIB_RUN_PTP
 			process_ptp();
 #endif
-
 		}
 
+
 	}
+
+	LwipThread singleton;
+
+	LwipThread& LwipThread::get()
+	{
+		return singleton;
+	}
+
+
+
 
 } }
 

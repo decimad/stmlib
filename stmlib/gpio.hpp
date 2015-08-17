@@ -131,7 +131,7 @@ namespace gpio {
 
 		void atomic_assign( bool value )
 		{
-			port_ref(port_).bsrr = (((!value)&1)<<pin_) | ((value&1)<<pin_+16);
+			port_ref(port_).bsrr = (((!value)&1)<<pin_) | ((value&1)<<(pin_+16));
 		}
 
 		void assign( bool value )
@@ -351,6 +351,8 @@ namespace gpio {
 
 		template< uint8 port_num, uint16 pinflags >
 		static void run_static(const input_struct& mode) {
+			(void) mode;
+
 			using namespace reg_detail;
 			auto& port = port_ref(port_num);
 
@@ -358,6 +360,8 @@ namespace gpio {
 		}
 
 		static void run_dynamic(const pin_ref& p, const input_struct& mode) {
+			(void) mode;
+
 			using namespace reg_detail;
 			auto& port = port_ref(p.port());
 
@@ -402,6 +406,8 @@ namespace gpio {
 
 		template< uint8 port_num, uint16 pinflags >
 		static void run_static(const pull_up& config) {
+			(void) config;
+
 			using namespace reg_detail;
 			auto& port = port_ref(port_num);
 
@@ -410,6 +416,8 @@ namespace gpio {
 
 		static void run_dynamic( const pin_ref& p, const pull_up& config )
 		{
+			(void) config;
+
 			using namespace reg_detail;
 			auto& port = port_ref(p.port());
 

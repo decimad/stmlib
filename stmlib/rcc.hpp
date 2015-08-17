@@ -111,7 +111,7 @@ namespace rcc {
 
 	constexpr unsigned int log2_upper( uint64 value )
 	{
-		return ((1 << log2_lower(value)) == value) ? log2_lower(value) : log2_lower(value) + 1;
+		return ((uint64(1) << log2_lower(value)) == value) ? log2_lower(value) : log2_lower(value) + 1;
 	}
 
 	constexpr unsigned int encode_exponent( unsigned int exponent, unsigned int width )

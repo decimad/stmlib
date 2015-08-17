@@ -169,7 +169,7 @@ namespace bit {
 		struct replicate_bits< Type, Width, 0, Mask >{
 			static constexpr Type exec(unsigned int value)
 			{
-				return 0;
+				return (void)value, 0;
 			}
 		};
 
@@ -213,7 +213,7 @@ namespace bit {
 		 */
 		constexpr uint32 calc_bitband_address( uint32 Pos, uint32 Bit )
 		{
-			return 0x42000000 + (Pos-0x40000000) * 32;	// "<< 5" is for idiots
+			return 0x42000000 + (Pos-0x40000000) * 32 + Bit;
 		}
 
 		/*
