@@ -20,6 +20,7 @@
 #endif
 
 #include <stmlib/flash_registers.hpp>
+#include <stmlib/rcc/pll_parameters.hpp>
 
 namespace rcc {
 
@@ -27,7 +28,7 @@ namespace rcc {
 	template< typename... PinsListPack >
 	void enable_gpio() {
 		using namespace gpio;
-		using port_array = typename detail::port_array_from_pins< gpio::detail::empty_port_array, PinsListPack... >::type;
+		using port_array = typename gpio::detail::port_array_from_pins< gpio::detail::empty_port_array, PinsListPack... >::type;
 		using namespace ulib::meta;
 
 		uint32 mask = 0;
@@ -70,155 +71,39 @@ namespace rcc {
 	}
 #endif
 
-	template< unsigned int Value, unsigned int Pos = 0 >
-	struct uppermost {
-		static const unsigned int value = uppermost<(Value >> 1), Pos + 1>::value;
-	};
+	template< unsigned int source_clock, unsigned int target_clock, unsigned int system_tick = 1000 >
+	struct clock_values {
+		// see rcc/pll_parameters.hpp for parameter calculations.
+		static constexpr detail::sol pll = detail::calculate_pll_config(source_clock, target_clock);
+		
+		static constexpr int p = detail::encode_p(pll.p);
+		static constexpr int m = pll.m;
+		static constexpr int n = pll.n;
+		static constexpr int ahb_prescaler = detail::encode_a(pll.a);
+		
+		static constexpr int q = detail::calculate_q(source_clock, pll);
+		
+		static constexpr int fast_apb_prescaler = detail::calculate_fast_apb(source_clock, pll);
+		static constexpr int slow_apb_prescaler = detail::calculate_slow_apb(source_clock, pll);
 
-	template< unsigned int Pos >
-	struct uppermost< 1, Pos > {
-		static const unsigned int value = Pos;
-	};
-
-	constexpr unsigned int div_upper( uint64 a, uint64 b )
-	{
-		return (a%b == 0) ? (a/b) : (a/b + 1);
-	}
-
-	constexpr unsigned int div_lower( uint64 a, uint64 b )
-	{
-		return a/b;
-	}
-
-	constexpr unsigned int div_rounded( uint64 a, uint64 b )
-	{
-		return (2*(a%b) > b) ? (a/b + 1) : (a/b);
-	}
-
-	constexpr uint64 calc_clock( uint64 oscillator_freq, uint64 m, uint64 p, uint64 n )
-	{
-		return oscillator_freq * n / (m*2*(p+1));
-	}
-
-	constexpr unsigned int cabs( int32 value ) {
-		return (value < 0) ? -value : value;
-	};
-
-	constexpr unsigned int log2_lower( uint64 value )
-	{
-		return (value == 1) ? 1 : ((value > 1) ? (1 + log2_lower(value >> 1)) : -1);
-	}
-
-	constexpr unsigned int log2_upper( uint64 value )
-	{
-		return ((uint64(1) << log2_lower(value)) == value) ? log2_lower(value) : log2_lower(value) + 1;
-	}
-
-	constexpr unsigned int encode_exponent( unsigned int exponent, unsigned int width )
-	{
-		return (exponent == 0) ? 0 : ((1<<(width-1)) | (exponent-1));
-	}
-
-	template< unsigned int external_clock, unsigned int target_clock, unsigned int system_tick_clock = 1000 >
-	struct pll_values
-	{
-		// hse -> /m -> 1-2MHz => PLL(*p/n) -> SW -> System Clock -> AHB_PRESCALER(1) -> AHB1 / HCLK
-		//                                                                      -> /8 -> Systick
-		// -> APB_PRESCALER
-
-		// f_in = f_ext / m, f_in should be 2MHz
-
-		// f_out = f_in * p / n;
-		// n = input divider, possible values { 2, 4, 6, 8 }
-		// p = feedback divider, possible values [192, 432]
-
-		//
-
-
-		// pll ready => Bit 25 of reg::cr
-		// enable pll => Bit 24 of reg::cr
-
-		// hse ready => Bit 17 of reg::cr
-		// enable hse => Bit 16 of reg::cr
-
-		// pllq: usb division factor, generate 48MHz pllcfgr[27:24]
-		// pllsrc: source clock for main pll, pllcfgr[22], 0 = hsi, 1 = hse
-		// pllp: main division factor, generate target_clock pllcfgr[17:16], 0: 2, 1: 4, 2: 6, 3: 8
-		// plln: main multi factor, generate target_clock pllcfgr[14:6], 192 <= value <= 432
-		// pllm: pll division factor, generate 2MHz, pllcfgr[5:0], 2 <= value
-
-		// ppre2: apb2 divisor (ahb -> apb2), generate 84MHz, cfgr[15:13], 0xx => 1, 100 => 2, 101 => 4, ...
-		// ppre2: apb1 divisor (ahb -> apb1), generate 48MHz, cfgr[12:10], 0xx => 1, 100 => 2, 101 => 4, ...
-		// hpre: ahb prescaler (system => ahb), generate >= 25MHz for ethernet. cfgr[7:4] 0xxx => 1, 1000 => 2, 1001 => 4, 1010 => 8
-
-		// sws: system clock switch status, cfgr[3:2], 00: hsi, 01: hse, 10: pll
-		// sw: system clock switch, cfgr[1:0], 00: hsi, 01: hse, 10 : pll
-
-		// pre-pll divider (f_in = f_oscillator / m)
-		static const unsigned int pllm = div_upper(external_clock, 2000000);
-		static const unsigned int input_clock = div_rounded(external_clock, pllm);
-
-		// pll input divider (f_out = f_in * plln / pllp)
-		static const unsigned int lower_pllp = div_upper(192 * input_clock, target_clock*2)-1;
-		static const unsigned int upper_pllp = div_lower(432 * input_clock, target_clock*2)-1;
-
-		// pll return divider
-		// since 192*3 > 432 there are only at most 2 possible configurations
-		static const unsigned int lower_plln = div_rounded(target_clock, div_rounded(input_clock, (lower_pllp+1)*2));
-		static const unsigned int upper_plln = div_rounded(target_clock, div_rounded(input_clock, (upper_pllp+1)*2));
-
-		static const unsigned int lower_diff = cabs(calc_clock(external_clock, pllm, lower_pllp, lower_plln) - target_clock);
-		static const unsigned int upper_diff = cabs(calc_clock(external_clock, pllm, upper_pllp, upper_plln) - target_clock);
-
-		// chose p-n-combination with lowest difference to target_clock, if equal prefer smaller input divider.
-		static const unsigned int plln = (lower_diff <= upper_diff) ? lower_plln : upper_plln;
-		static const unsigned int pllp = (lower_diff <= upper_diff) ? lower_pllp : upper_pllp; // the register encodes 0 as being /2
-
-		static const uint64 result_clock = calc_clock(external_clock, pllm, pllp, plln);
-
-		static const unsigned int pllq = div_upper(external_clock*plln, pllm*48000000);
-
-		static constexpr unsigned int hpre  = encode_exponent( log2_upper(1), 3 );
-		static constexpr unsigned int ppre1 = encode_exponent( log2_upper(div_rounded(result_clock, 84000000)), 2);
-		static constexpr unsigned int ppre2 = encode_exponent( log2_upper(div_rounded(result_clock, 42000000)), 2);
-
-		static constexpr unsigned int sysreload = result_clock / system_tick_clock;
+		static constexpr int systick_reload = detail::calculate_systick_reload(source_clock, pll, system_tick);
 	};
 
 	template< unsigned int source_clock, unsigned int target_clock, unsigned int system_tick = 1000 >
 	void configure_hse()
 	{
-		// configure pll
-		using pll = pll_values< source_clock, target_clock, system_tick >;
-
-		// pll ready => Bit 25 of reg::cr
-		// enable pll => Bit 24 of reg::cr
-
-		// hse ready => Bit 17 of reg::cr
-		// enable hse => Bit 16 of reg::cr
-
-		// pllq: usb division factor, generate 48MHz pllcfgr[27:24]
-		// pllsrc: source clock for main pll, pllcfgr[22], 0 = hsi, 1 = hse
-		// pllp: main division factor, generate target_clock pllcfgr[17:16], 0 => 2, 1 => 4 etc.
-		// plln: main multi factor, generate target_clock pllcfgr[14:6], 192 <= value <= 432
-		// pllm: pll division factor, generate 2MHz, pllcfgr[5:0], 2 <= value
-
+		using values = clock_values<source_clock, target_clock, system_tick>;
 		using namespace fields;
 
 		device.cr <<= cr::hseon(1);
 		while(!device.cr.field<cr::hserdy>());
 
 		// Setup main PLL config
-		// GCC warns here: operator<<= returns a reference to the written register, but
-		// we don't access it, so the dereference is optimized away, there is no
-		// read access to the volatile register because of that.
-
-
-		device.pllcfgr <<= pllcfgr::pllq(pll::pllq) |
-						   pllcfgr::pllsrc(1) |
-						   pllcfgr::pllp(pll::pllp) |
-						   pllcfgr::plln(pll::plln) |
-						   pllcfgr::pllm(pll::pllm);
+		device.pllcfgr <<= pllcfgr::pllq(values::q) |
+						   pllcfgr::pllsrc(1)		|	// HSE source
+						   pllcfgr::pllp(values::p) |
+						   pllcfgr::plln(values::n) |
+						   pllcfgr::pllm(values::m);
 
 		device.cr <<= cr::pllon(1);  // Enable PLL
 
@@ -227,15 +112,15 @@ namespace rcc {
 		// If current clock is lower than target clock, those prescalers will have lower value, so replace them prior to change
 		auto snapshot = device.cfgr.snapshot();
 
-		const auto apb2_prescaler = snapshot.field<cfgr::ppre2>(); // field<15,13>::read(regs.cfgr);
-		const auto apb1_prescaler = snapshot.field<cfgr::ppre1>(); // field<12,10>::read(regs.cfgr);
+		const auto slow_apb_prescaler = snapshot.field<cfgr::ppre2>();
+		const auto fast_apb_prescaler = snapshot.field<cfgr::ppre1>();
 
-		if(apb2_prescaler < pll::ppre2) {
-			device.cfgr <<= cfgr::ppre2(pll::ppre2);
+		if(slow_apb_prescaler < values::slow_apb_prescaler) {
+			device.cfgr <<= cfgr::ppre2(values::slow_apb_prescaler);
 		}
 
-		if(apb1_prescaler < pll::ppre1) {
-			device.cfgr <<= cfgr::ppre1(pll::ppre1);
+		if(fast_apb_prescaler < values::fast_apb_prescaler) {
+			device.cfgr <<= cfgr::ppre1(values::fast_apb_prescaler);
 		}
 
 		while( !device.cr.field<cr::pllrdy>() ); // Wait for PLL stability
@@ -249,37 +134,23 @@ namespace rcc {
 
 		while( device.cfgr.field<cfgr::sws>() != 2 ); // wait for pll
 
-		device.cfgr <<= cfgr::hpre(pll::hpre);
+		device.cfgr <<= cfgr::hpre(values::ahb_prescaler);
 
-		if(apb2_prescaler > pll::ppre2) {
-			device.cfgr <<= cfgr::ppre2(pll::ppre2);
+		if(slow_apb_prescaler > values::slow_apb_prescaler) {
+			device.cfgr <<= cfgr::ppre2(values::slow_apb_prescaler);
 		}
 
-		if(apb1_prescaler > pll::ppre1) {
-			device.cfgr <<= cfgr::ppre1(pll::ppre1);
+		if(fast_apb_prescaler > values::fast_apb_prescaler) {
+			device.cfgr <<= cfgr::ppre1(values::fast_apb_prescaler);
 		}
 
-		core::device.stk_load = pll::sysreload;
+		// Set up SystemTick timer (ChibiOS expects 1kHz frequency)
+		core::device.stk_load = values::systick_reload;
 		core::device.stk_val = 0;
 		core::device.stk_ctrl =
 			core::fields::stk_ctrl::tickint(1) |
 			core::fields::stk_ctrl::clksource(1) |
 			core::fields::stk_ctrl::enable(1);
-
-		// ppre2: apb2 divisor (ahb -> apb2), generate 84MHz, cfgr[15:13], 0xx => 1, 100 => 2, 101 => 4, ...
-		// ppre1: apb1 divisor (ahb -> apb1), generate 48MHz, cfgr[12:10], 0xx => 1, 100 => 2, 101 => 4, ...
-		// hpre: ahb prescaler (system => ahb), generate >= 25MHz for ethernet. cfgr[7:4] 0xxx => 1, 1000 => 2, 1001 => 4, 1010 => 8
-
-		// sws: system clock switch status, cfgr[3:2], 00: hsi, 01: hse, 10: pll
-		// sw: system clock switch, cfgr[1:0], 00: hsi, 01: hse, 10 : pll
-
-		// wait until hse is ready
-		// enable pll
-		// wait until pll is ready
-		// switch to pll
-
-		// setup systick timer
-		// activate systick timer & interrupt
 	}
 
 }
