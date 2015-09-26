@@ -266,7 +266,12 @@ namespace eth { namespace lwip {
 			auto result = chEvtWaitAnyTimeout((eventmask_t)EventMasks::Msg | (eventmask_t)EventMasks::Rx | (eventmask_t)EventMasks::Tx, std::min<uint32>(get_next_timer(), MS2ST(100)));
 			switch (result) {
 			case (eventmask_t)EventMasks::Msg:
-/*
+/* We don't define commands yet.
+ * Need to define a way which supports
+ * ulib::function or the like
+ * Would also be nice to find a general way
+ * to inject entities into a thread from outside.
+ * (at compile time)
 				{
 					while (mailbox_.size()) {
 						auto ptr = std::move(mailbox_.front());
@@ -282,6 +287,7 @@ namespace eth { namespace lwip {
 */
 				break;
 			case (eventmask_t)EventMasks::Rx:
+				// lwip input functions need the netif.
 				rx_walk_descriptors(&interface_);
 				break;
 			case (eventmask_t)EventMasks::Tx:
@@ -289,6 +295,9 @@ namespace eth { namespace lwip {
 				break;
 			}
 
+			// separate phy read command from the actual read
+			// in order to avoid blocking while waiting for
+			// the answer.
 			if(started_phy_read) {
 				auto phystats = eth::phy_read_register_finish();
 				if(!link_status && (phystats & 1)) {

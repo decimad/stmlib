@@ -125,20 +125,20 @@ namespace core {
 
 		// System handler control and state register (pm page 219)
 		namespace shcsr {
-			using usgfaultena = bit::field<18>;
-			using busfaultena = bit::field<17>;
-			using memfaultena = bit::field<16>;
-			using svcallpended = bit::field<15>;
+			using usgfaultena    = bit::field<18>;
+			using busfaultena    = bit::field<17>;
+			using memfaultena    = bit::field<16>;
+			using svcallpended   = bit::field<15>;
 			using busfaultpended = bit::field<14>;
 			using memfaultpended = bit::field<13>;
 			using usgfaultpended = bit::field<12>;
-			using systickact = bit::field<11>;
-			using pendsvact = bit::field<10>;
-			using monitoract = bit::field<8>;
-			using svcallact = bit::field<7>;
-			using usgfaultact = bit::field<3>;
-			using busfaultact = bit::field<1>;
-			using memfaultact = bit::field<0>;
+			using systickact     = bit::field<11>;
+			using pendsvact      = bit::field<10>;
+			using monitoract     = bit::field<8>;
+			using svcallact      = bit::field<7>;
+			using usgfaultact    = bit::field<3>;
+			using busfaultact    = bit::field<1>;
+			using memfaultact    = bit::field<0>;
 		}
 
 		// Following registers seem most useful in a capable debugger
