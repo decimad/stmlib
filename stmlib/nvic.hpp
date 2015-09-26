@@ -179,12 +179,12 @@ namespace nvic {
 		device.stir = static_cast<int8>(irq);
 	}
 
+	// Default interrupt handler (global namespace for convenience)
+	template< IRQ id >
+	void isr();
+
 }
 
 extern "C" void unimplemented_handler();
-
-// Default interrupt handler (global namespace for convenience)
-template< nvic::IRQ id >
-void isr() /*__attribute__((weak, alias("unimplemented_handler")))*/;
 
 #endif /* INTERRUPTS_HPP_ */

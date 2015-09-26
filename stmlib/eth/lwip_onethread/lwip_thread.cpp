@@ -347,29 +347,33 @@ namespace eth { namespace lwip {
 
 } }
 
-template<>
-void isr<nvic::IRQ::ETH>()
-{
-	CH_IRQ_PROLOGUE();
+namespace nvic {
 
-	auto dma_status = eth::device.dmasr.snapshot();
+	template<>
+	void isr<IRQ::ETH>()
+	{
+		CH_IRQ_PROLOGUE();
 
-	if (dma_status.field<eth::fields::dmasr::rs>()) {
-		// At least 1 frame was received
-		chSysLockFromIsr();
-		eth::device.dmasr <<= eth::fields::dmasr::nis(1) | eth::fields::dmasr::rs(1);	// clear rs bit
-		eth::lwip::LwipThread::get().on_rx();
-		chSysUnlockFromIsr();
+		auto dma_status = eth::device.dmasr.snapshot();
+
+		if (dma_status.field<eth::fields::dmasr::rs>()) {
+			// At least 1 frame was received
+			chSysLockFromIsr();
+			eth::device.dmasr <<= eth::fields::dmasr::nis(1) | eth::fields::dmasr::rs(1);	// clear rs bit
+			eth::lwip::LwipThread::get().on_rx();
+			chSysUnlockFromIsr();
+		}
+
+		if (dma_status.field<eth::fields::dmasr::ts>()) {
+			chSysLockFromIsr();
+			eth::device.dmasr <<= eth::fields::dmasr::nis(1) | eth::fields::dmasr::ts(1);	// clear ts bit
+			eth::lwip::LwipThread::get().on_tx();
+			chSysUnlockFromIsr();
+		}
+
+		CH_IRQ_EPILOGUE();
 	}
 
-	if (dma_status.field<eth::fields::dmasr::ts>()) {
-		chSysLockFromIsr();
-		eth::device.dmasr <<= eth::fields::dmasr::nis(1) | eth::fields::dmasr::ts(1);	// clear ts bit
-		eth::lwip::LwipThread::get().on_tx();
-		chSysUnlockFromIsr();
-	}
-
-	CH_IRQ_EPILOGUE();
 }
 
 extern "C" {
