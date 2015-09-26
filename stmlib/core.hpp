@@ -229,7 +229,7 @@ namespace core {
 		bit::register_base shpr1;
 		bit::register_base shpr2;
 		bit::register_base shpr3;
-		bit::register_base shcrs;
+		bit::register_base shcsr;
 		bit::register_base cfsr;
 		bit::register_base hfsr;
 		uint32 zzreserved2;
