@@ -12,11 +12,12 @@
 
 #ifndef STMLIB_LWIP_ONETHREAD
 
-namespace eth { namespace lwip {
+namespace eth::lwip
+{
 
-	void start();
+    void start();
 
-} }
+} // namespace eth::lwip
 
 #endif
 

@@ -5,48 +5,58 @@
 
 #include <stmlib/bits.hpp>
 
-namespace syscfg { 
-    namespace fields {
+namespace syscfg
+{
+    namespace fields
+    {
         // SYSCFG memory remap register [offset: 0x00, reset: 0x0000 000]
-        namespace memrmp {
+        namespace memrmp
+        {
             // Memory mapping selection (rm page 287)
             using mem_mode = bit::field<1, 0>;
-        }
+        } // namespace memrmp
         // SYSCFG peripheral mode configuration register [offset: 0x04, reset: 0x0000 0000]
-        namespace pmc {
+        namespace pmc
+        {
             // Ethernet PHY interface selection (rm page 287)
             using mii_rmii_sel = bit::field<23>;
-        }
+        } // namespace pmc
         // SYSCFG external interrupt configuration register 1 [offset: 0x08, reset: 0x0000 0000]
-        namespace exticr1 {
+        namespace exticr1
+        {
             // EXTI x configuration (x = 0 to 3) (rm page 288)
             using extix = bit::field<15, 0>;
-        }
+        } // namespace exticr1
         // SYSCFG external interrupt configuration register 2 [offset: 0x0C, reset: 0x0000 0000]
-        namespace exticr2 {
+        namespace exticr2
+        {
             // EXTI x configuration (x = 4 to 7) (rm page 288)
             using extix = bit::field<15, 0>;
-        }
+        } // namespace exticr2
         // SYSCFG external interrupt configuration register 3 [offset: 0x10, reset: 0x0000 0000]
-        namespace exticr3 {
+        namespace exticr3
+        {
             // EXTI x configuration (x = 8 to 11) (rm page 289)
             using extix = bit::field<15, 0>;
-        }
+        } // namespace exticr3
         // SYSCFG external interrupt configuration register 4 [offset: 0x14, reset: 0x0000 0000]
-        namespace exticr4 {
+        namespace exticr4
+        {
             // EXTI x configuration (x = 12 to 15) (rm page 290)
             using extix = bit::field<15, 0>;
-        }
+        } // namespace exticr4
         // Compensation cell control register [offset: 0x20, reset: 0x0000 0000]
-        namespace cmpcr {
+        namespace cmpcr
+        {
             // Compensation cell ready flag (rm page 290)
             using ready = bit::field<8>;
             // Compensation cell power-down (rm page 290)
             using cmp_pd = bit::field<0>;
-        }
-    } // namespace fields
+        } // namespace cmpcr
+    }     // namespace fields
 
-    struct register_map {
+    struct register_map
+    {
         // MEMRMP: SYSCFG memory remap register (rm page 286)
         bit::register_base memrmp;
         // PMC: SYSCFG peripheral mode configuration register (rm page 287)
@@ -64,16 +74,7 @@ namespace syscfg {
         bit::register_base cmpcr;
     };
 
-
-#if __GNUC__ == 4 && __GNUC_MINOR__ == 9
-
     extern "C" register_map __syscfg__device_0x40013800;
-    static auto& device = __syscfg__device_0x40013800;
-
-#else
-
-    static auto& device = util::reference<register_map, 0x40013800>::value;
-
-#endif
+    static auto &device = __syscfg__device_0x40013800;
 
 } // namespace syscfg

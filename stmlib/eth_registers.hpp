@@ -4,10 +4,13 @@
 
 #include <stmlib/bits.hpp>
 
-namespace eth { 
-    namespace fields {
+namespace eth
+{
+    namespace fields
+    {
         // Ethernet MAC configuration register [offset: 0x0000, reset: 0x0000 8000]
-        namespace maccr {
+        namespace maccr
+        {
             // CRC stripping for Type frames (rm page 1153)
             using cstf = bit::field<25>;
             // Watchdog disable (rm page 1153)
@@ -40,9 +43,11 @@ namespace eth {
             using te = bit::field<3>;
             // Receiver enable (rm page 1176)
             using re = bit::field<2>;
-        }
+        } // namespace maccr
+
         // Ethernet MAC frame filter register [offset: 0x0004, reset: 0x0000 0000]
-        namespace macffr {
+        namespace macffr
+        {
             // Receive all (rm page 1177)
             using ra = bit::field<31>;
             // Hash or perfect filter (rm page 1177)
@@ -65,19 +70,25 @@ namespace eth {
             using hu = bit::field<1>;
             // Promiscuous mode (rm page 1178)
             using pm = bit::field<0>;
-        }
+        } // namespace macffr
+
         // Ethernet MAC hash table high register [offset: 0x0008, reset: 0x0000 0000]
-        namespace machthr {
+        namespace machthr
+        {
             // Hash table high (rm page 1179)
             using hth = bit::field<31, 0>;
-        }
+        } // namespace machthr
+
         // Ethernet MAC hash table low register [offset: 0x000C, reset: 0x0000 0000]
-        namespace machtlr {
+        namespace machtlr
+        {
             // Hash table low (rm page 1179)
             using htl = bit::field<31, 0>;
-        }
+        } // namespace machtlr
+
         // Ethernet MAC MII address register [offset: 0x0010, reset: 0x0000 0000]
-        namespace macmiiar {
+        namespace macmiiar
+        {
             // PHY address (rm page 1180)
             using pa = bit::field<15, 11>;
             // MII register (rm page 1180)
@@ -88,14 +99,18 @@ namespace eth {
             using mw = bit::field<1>;
             // MII busy (rm page 1180)
             using mb = bit::field<0>;
-        }
+        } // namespace macmiiar
+
         // Ethernet MAC MII data register [offset: 0x0014, reset: 0x0000 0000]
-        namespace macmiidr {
+        namespace macmiidr
+        {
             // MII data (rm page 1180)
             using md = bit::field<15, 0>;
-        }
+        } // namespace macmiidr
+
         // Ethernet MAC flow control register [offset: 0x0018, reset: 0x0000 0000]
-        namespace macfcr {
+        namespace macfcr
+        {
             // Pause time (rm page 1181)
             using pt = bit::field<31, 16>;
             // Zero-quanta pause disable (rm page 1181)
@@ -110,16 +125,20 @@ namespace eth {
             using tfce = bit::field<1>;
             // Flow control busy/back pressure activate (rm page 1182)
             using fcb_bpa = bit::field<0>;
-        }
+        } // namespace macfcr
+
         // Ethernet MAC VLAN tag register [offset: 0x001C, reset: 0x0000 0000]
-        namespace macvlantr {
+        namespace macvlantr
+        {
             // 12-bit VLAN tag comparison (rm page 1183)
             using vlantc = bit::field<16>;
             // VLAN tag identifier (for receive frames) (rm page 1183)
             using vlanti = bit::field<15, 0>;
-        }
+        } // namespace macvlantr
+
         // Ethernet MAC PMT control and status register [offset: 0x002C, reset: 0x0000 0000]
-        namespace macpmtcsr {
+        namespace macpmtcsr
+        {
             // Wakeup frame filter register pointer reset (rm page 1184)
             using wffrpr = bit::field<31>;
             // Global unicast (rm page 1184)
@@ -134,9 +153,11 @@ namespace eth {
             using mpe = bit::field<1>;
             // Power down (rm page 1184)
             using pd = bit::field<0>;
-        }
+        } // namespace macpmtcsr
+
         // Ethernet MAC debug register [offset: 0x0034, reset: 0x0000 0000]
-        namespace macdbgr {
+        namespace macdbgr
+        {
             // Tx FIFO full (rm page 1185)
             using tff = bit::field<25>;
             // Tx FIFO not empty (rm page 1185)
@@ -161,9 +182,11 @@ namespace eth {
             using msfrwcs = bit::field<2, 1>;
             // MAC MII receive protocol engine active (rm page 1186)
             using mmrpea = bit::field<0>;
-        }
+        } // namespace macdbgr
+
         // Ethernet MAC interrupt status register [offset: 0x0038, reset: 0x0000 0000]
-        namespace macsr {
+        namespace macsr
+        {
             // Time stamp trigger status (rm page 1187)
             using tsts = bit::field<9>;
             // MMC transmit status (rm page 1187)
@@ -174,28 +197,36 @@ namespace eth {
             using mmcs = bit::field<4>;
             // PMT status (rm page 1187)
             using pmts = bit::field<3>;
-        }
+        } // namespace macsr
+
         // Ethernet MAC interrupt mask register [offset: 0x003C, reset: 0x0000 0000]
-        namespace macimr {
+        namespace macimr
+        {
             // Time stamp trigger interrupt mask (rm page 1188)
             using tstim = bit::field<9>;
             // PMT interrupt mask (rm page 1188)
             using pmtim = bit::field<3>;
-        }
+        } // namespace macimr
+
         // Ethernet MAC address 0 high register [offset: 0x0040, reset: 0x8000 FFFF]
-        namespace maca0hr {
+        namespace maca0hr
+        {
             // Always 1. (rm page 1188)
             using mo = bit::field<31>;
             // MAC address0 high [47:32] (rm page 1188)
             using maca0h = bit::field<15, 0>;
-        }
+        } // namespace maca0hr
+
         // Ethernet MAC address 0 low register [offset: 0x0044, reset: 0xFFFF FFFF]
-        namespace maca0lr {
+        namespace maca0lr
+        {
             // MAC address0 low [31:0] (rm page 1189)
             using maca0l = bit::field<31, 0>;
-        }
+        } // namespace maca0lr
+
         // Ethernet MAC address 1 high register [offset: 0x0048, reset: 0x0000 FFFF]
-        namespace maca1hr {
+        namespace maca1hr
+        {
             // Address enable (rm page 1189)
             using ae = bit::field<31>;
             // Source address (rm page 1189)
@@ -204,14 +235,18 @@ namespace eth {
             using mbc = bit::field<29, 24>;
             // MAC address1 high [47:32] (rm page 1190)
             using maca1h = bit::field<15, 0>;
-        }
+        } // namespace maca1hr
+
         // Ethernet MAC address1 low register [offset: 0x004C, reset: 0xFFFF FFFF]
-        namespace maca1lr {
+        namespace maca1lr
+        {
             // MAC address1 low [31:0] (rm page 1190)
             using maca1l = bit::field<31, 0>;
-        }
+        } // namespace maca1lr
+
         // Ethernet MAC address 2 high register [offset: 0x0050, reset: 0x0000 FFFF]
-        namespace maca2hr {
+        namespace maca2hr
+        {
             // Address enable (rm page 1191)
             using ae = bit::field<31>;
             // Source address (rm page 1191)
@@ -220,14 +255,18 @@ namespace eth {
             using mbc = bit::field<29, 24>;
             // MAC address2 high [47:32] (rm page 1191)
             using maca2h = bit::field<15, 0>;
-        }
+        } // namespace maca2hr
+
         // Ethernet MAC address 2 low register [offset: 0x0054, reset: 0xFFFF FFFF]
-        namespace maca2lr {
+        namespace maca2lr
+        {
             // MAC address2 low [31:0] (rm page 1191)
             using maca2l = bit::field<31, 0>;
-        }
+        } // namespace maca2lr
+
         // Ethernet MAC address 3 high register [offset: 0x0058, reset: 0x0000 FFFF]
-        namespace maca3hr {
+        namespace maca3hr
+        {
             // Address enable (rm page 1192)
             using ae = bit::field<31>;
             // Source address (rm page 1192)
@@ -236,14 +275,18 @@ namespace eth {
             using mbc = bit::field<29, 24>;
             // MAC address3 high [47:32] (rm page 1192)
             using maca3h = bit::field<15, 0>;
-        }
+        } // namespace maca3hr
+
         // Ethernet MAC address 3 low register [offset: 0x005C, reset: 0xFFFF FFFF]
-        namespace maca3lr {
+        namespace maca3lr
+        {
             // MAC address3 low [31:0] (rm page 1192)
             using maca3l = bit::field<31, 0>;
-        }
+        } // namespace maca3lr
+
         // Ethernet MMC control register [offset: 0x0100, reset: 0x0000 0000]
-        namespace mmccr {
+        namespace mmccr
+        {
             // MMC counter Full-Half preset (rm page 1193)
             using mcfhp = bit::field<5>;
             // MMC counter freeze (rm page 1193)
@@ -254,75 +297,97 @@ namespace eth {
             using csr = bit::field<1>;
             // Counter reset (rm page 1193)
             using cr = bit::field<0>;
-        }
+        } // namespace mmccr
+
         // Ethernet MMC receive interrupt register [offset: 0x0104, reset: 0x0000 0000]
-        namespace mmcrir {
+        namespace mmcrir
+        {
             // Received Good Unicast Frames Status (rm page 1194)
             using rgufs = bit::field<17>;
             // Received frames alignment error status (rm page 1194)
             using rfaes = bit::field<6>;
             // Received frames CRC error status (rm page 1194)
             using rfces = bit::field<5>;
-        }
+        } // namespace mmcrir
+
         // Ethernet MMC transmit interrupt register [offset: 0x0108, reset: 0x0000 0000]
-        namespace mmctir {
+        namespace mmctir
+        {
             // Transmitted good frames status (rm page 1194)
             using tgfs = bit::field<21>;
             // Transmitted good frames more single collision status (rm page 1195)
             using tgfmscs = bit::field<15>;
             // Transmitted good frames single collision status (rm page 1195)
             using tgfscs = bit::field<14>;
-        }
+        } // namespace mmctir
+
         // Ethernet MMC receive interrupt mask register [offset: 0x010C, reset: 0x0000 0000]
-        namespace mmcrimr {
+        namespace mmcrimr
+        {
             // Received good unicast frames mask (rm page 1195)
             using rgufm = bit::field<17>;
             // Received frames alignment error mask (rm page 1195)
             using rfaem = bit::field<6>;
             // Received frame CRC error mask (rm page 1195)
             using rfcem = bit::field<5>;
-        }
+        } // namespace mmcrimr
+
         // Ethernet MMC transmit interrupt mask register [offset: 0x0110, reset: 0x0000 0000]
-        namespace mmctimr {
+        namespace mmctimr
+        {
             // Transmitted good frames mask (rm page 1196)
             using tgfm = bit::field<21>;
             // Transmitted good frames more single collision mask (rm page 1196)
             using tgfmscm = bit::field<15>;
             // Transmitted good frames single collision mask (rm page 1196)
             using tgfscm = bit::field<14>;
-        }
+        } // namespace mmctimr
+
         // Ethernet MMC transmitted good frames after a single collision counter register [offset: 0x014C, reset: 0x0000 0000]
-        namespace mmctgfsccr {
+        namespace mmctgfsccr
+        {
             // Transmitted good frames single collision counter (rm page 1196)
             using tgfscc = bit::field<31, 0>;
-        }
+        } // namespace mmctgfsccr
+
         // Ethernet MMC transmitted good frames after more than a single collision counter register [offset: 0x0150, reset: 0x0000 0000]
-        namespace mmctgfmsccr {
+        namespace mmctgfmsccr
+        {
             // Transmitted good frames more single collision counter (rm page 1197)
             using tgfmscc = bit::field<31, 0>;
-        }
+        } // namespace mmctgfmsccr
+
         // Ethernet MMC transmitted good frames counter register [offset: 0x0168, reset: 0x0000 0000]
-        namespace mmctgfcr {
+        namespace mmctgfcr
+        {
             // Transmitted good frames counter (rm page 1197)
             using tgfc = bit::field<31, 0>;
-        }
+        } // namespace mmctgfcr
+
         // Ethernet MMC received frames with CRC error counter register [offset: 0x0194, reset: 0x0000 0000]
-        namespace mmcrfcecr {
+        namespace mmcrfcecr
+        {
             // Received frames CRC error counter (rm page 1197)
             using rfcec = bit::field<31, 0>;
-        }
+        } // namespace mmcrfcecr
+
         // Ethernet MMC received frames with alignment error counter register [offset: 0x0198, reset: 0x0000 0000]
-        namespace mmcrfaecr {
+        namespace mmcrfaecr
+        {
             // Received frames alignment error counter (rm page 1197)
             using rfaec = bit::field<31, 0>;
-        }
+        } // namespace mmcrfaecr
+
         // MMC received good unicast frames counter register [offset: 0x01C4, reset: 0x0000 0000]
-        namespace mmcrgufcr {
+        namespace mmcrgufcr
+        {
             // Received good unicast frames counter (rm page 1198)
             using rgufc = bit::field<31, 0>;
-        }
+        } // namespace mmcrgufcr
+
         // Ethernet PTP time stamp control register [offset: 0x0700, reset: 0x0000 00002000]
-        namespace ptptscr {
+        namespace ptptscr
+        {
             // Time stamp PTP frame filtering MAC address enable			 (rm page 1198)
             using tspffmae = bit::field<18>;
             // Time stamp clock node type (rm page 1198)
@@ -355,65 +420,87 @@ namespace eth {
             using tsfcu = bit::field<1>;
             // Time stamp enable (rm page 1200)
             using tse = bit::field<0>;
-        }
+        } // namespace ptptscr
+
         // Ethernet PTP subsecond increment register [offset: 0x0704, reset: 0x0000 0000]
-        namespace ptpssir {
+        namespace ptpssir
+        {
             // System time subsecond increment (rm page 1201)
             using stssi = bit::field<7, 0>;
-        }
+        } // namespace ptpssir
+
         // Ethernet PTP time stamp high register [offset: 0x0708, reset: 0x0000 0000]
-        namespace ptptshr {
+        namespace ptptshr
+        {
             // System time second (rm page 1201)
             using sts = bit::field<31, 0>;
-        }
+        } // namespace ptptshr
+
         // Ethernet PTP time stamp low register [offset: 0x070C, reset: 0x0000 0000]
-        namespace ptptslr {
+        namespace ptptslr
+        {
             // System time positive or negative sign (rm page 1201)
             using stpns = bit::field<31>;
             // System time subseconds (rm page 1201)
             using stss = bit::field<30, 0>;
-        }
+        } // namespace ptptslr
+
         // Ethernet PTP time stamp high update register [offset: 0x0710, reset: 0x0000 0000]
-        namespace ptptshur {
+        namespace ptptshur
+        {
             // Time stamp update second (rm page 1202)
             using tsus = bit::field<31, 0>;
-        }
+        } // namespace ptptshur
+
         // TSUPNS             Ethernet PTP time stamp low update register [offset: 0x0714, reset: 0x0000 0000]
-        namespace ptptslur {
+        namespace ptptslur
+        {
             // Time stamp update positive or negative sign (rm page 1203)
             using tsupns = bit::field<31>;
             // Time stamp update subseconds (rm page 1203)
             using tsuss = bit::field<30, 0>;
-        }
+        } // namespace ptptslur
+
         // Ethernet PTP time stamp addend register [offset: 0x0718, reset: 0x0000 0000]
-        namespace ptptsar {
+        namespace ptptsar
+        {
             // Time stamp addend (rm page 1203)
             using tsa = bit::field<31, 0>;
-        }
+        } // namespace ptptsar
+
         // Ethernet PTP target time high register [offset: 0x071C, reset: 0x0000 0000]
-        namespace ptptthr {
+        namespace ptptthr
+        {
             // Target time stamp high (rm page 1204)
             using ttsh = bit::field<31, 0>;
-        }
+        } // namespace ptptthr
+
         // Ethernet PTP target time low register [offset: 0x0720, reset: 0x0000 0000]
-        namespace ptpttlr {
+        namespace ptpttlr
+        {
             // Target time stamp low (rm page 1204)
             using ttsl = bit::field<31, 0>;
-        }
+        } // namespace ptpttlr
+
         // Ethernet PTP time stamp status register [offset: 0x0728, reset: 0x0000 0000]
-        namespace ptptssr {
+        namespace ptptssr
+        {
             // Time stamp target time reached (rm page 1205)
             using tsttr = bit::field<1>;
             // Time stamp second overflow (rm page 1205)
             using tsso = bit::field<0>;
-        }
+        } // namespace ptptssr
+
         // Ethernet PTP PPS control register [offset: 0x072C, reset: 0x0000 0000]
-        namespace ptpppscr {
+        namespace ptpppscr
+        {
             // PPS frequency selection (rm page 1205)
             using ppsfreq = bit::field<3, 0>;
-        }
+        } // namespace ptpppscr
+
         // Ethernet DMA bus mode register [offset: 0x1000, reset: 0x0002 0101]
-        namespace dmabmr {
+        namespace dmabmr
+        {
             // Mixed burst (rm page 1206)
             using mb = bit::field<26>;
             // Address-aligned beats (rm page 1206)
@@ -438,29 +525,39 @@ namespace eth {
             using da = bit::field<1>;
             // Software reset (rm page 1207)
             using sr = bit::field<0>;
-        }
+        } // namespace dmabmr
+
         // Ethernet DMA transmit poll demand register [offset: 0x1004, reset: 0x0000 0000]
-        namespace dmatpdr {
+        namespace dmatpdr
+        {
             // Transmit poll demand (rm page 1208)
             using tpd = bit::field<31, 0>;
-        }
+        } // namespace dmatpdr
+
         // EHERNET DMA receive poll demand register [offset: 0x1008, reset: 0x0000 0000]
-        namespace dmarpdr {
+        namespace dmarpdr
+        {
             // Receive poll demand (rm page 1208)
             using rpd = bit::field<31, 0>;
-        }
+        } // namespace dmarpdr
+
         // Ethernet DMA receive descriptor list address register [offset: 0x100C, reset: 0x0000 0000]
-        namespace dmardlar {
+        namespace dmardlar
+        {
             // Start of receive list (rm page 1208)
             using srl = bit::field<31, 0>;
-        }
+        } // namespace dmardlar
+
         // Ethernet DMA transmit descriptor list address register [offset: 0x1010, reset: 0x0000 0000]
-        namespace dmatdlar {
+        namespace dmatdlar
+        {
             // Start of transmit list (rm page 1209)
             using stl = bit::field<31, 0>;
-        }
+        } // namespace dmatdlar
+
         // Ethernet DMA status register [offset: 0x1014, reset: 0x0000 0000]
-        namespace dmasr {
+        namespace dmasr
+        {
             // Time stamp trigger status (rm page 1209)
             using tsts = bit::field<29>;
             // PMT status (rm page 1209)
@@ -503,9 +600,11 @@ namespace eth {
             using tpss = bit::field<1>;
             // Transmit status (rm page 1212)
             using ts = bit::field<0>;
-        }
+        } // namespace dmasr
+
         // Ethernet DMA operation mode register [offset: 0x1018, reset: 0x0000 0000]
-        namespace dmaomr {
+        namespace dmaomr
+        {
             // Dropping of TCP/IP checksum error frames disable (rm page 1212)
             using dtcefd = bit::field<26>;
             // Receive store and forward (rm page 1212)
@@ -530,9 +629,11 @@ namespace eth {
             using osf = bit::field<2>;
             // Start/stop receive (rm page 1214)
             using sr = bit::field<1>;
-        }
+        } // namespace dmaomr
+
         // Ethernet DMA interrupt enable register [offset: 0x1020, reset: 0x0000 0000]
-        namespace dmaier {
+        namespace dmaier
+        {
             // Normal interrupt summary enable (rm page 1215)
             using nise = bit::field<16>;
             // Abnormal interrupt summary enable (rm page 1215)
@@ -571,149 +672,161 @@ namespace eth {
             using omfc = bit::field<16>;
             // Missed frames by the controller (rm page 1217)
             using mfc = bit::field<15, 0>;
-        }
+        } // namespace dmaier
+
         // Ethernet DMA receive status watchdog timer register [offset: 0x1024, reset: 0x0000 0000]
-        namespace dmarswtr {
+        namespace dmarswtr
+        {
             // Receive status (RS) watchdog timer count (rm page 1217)
             using rswtc = bit::field<7, 0>;
-        }
+        } // namespace dmarswtr
+
         // Ethernet DMA current host transmit descriptor register [offset: 0x1048, reset: 0x0000 0000]
-        namespace dmachtdr {
+        namespace dmachtdr
+        {
             // Host transmit descriptor address pointer (rm page 1218)
             using htdap = bit::field<31, 0>;
-        }
+        } // namespace dmachtdr
+
         // Ethernet DMA current host receive descriptor register [offset: 0x104C, reset: 0x0000 0000]
-        namespace dmachrdr {
+        namespace dmachrdr
+        {
             // Host receive descriptor address pointer (rm page 1218)
             using hrdap = bit::field<31, 0>;
-        }
+        } // namespace dmachrdr
+
         // Ethernet DMA current host transmit buffer address register [offset: 0x1050, reset: 0x0000 0000]
-        namespace dmachtbar {
+        namespace dmachtbar
+        {
             // Host transmit buffer address pointer (rm page 1218)
             using htbap = bit::field<31, 0>;
-        }
+        } // namespace dmachtbar
+
         // Ethernet DMA current host receive buffer address register [offset: 0x1054, reset: 0x0000 0000]
-        namespace dmachrbar {
+        namespace dmachrbar
+        {
             // Host receive buffer address pointer (rm page 1219)
             using hrbap = bit::field<31, 0>;
-        }
+        } // namespace dmachrbar
+
     } // namespace fields
 
-    struct register_map {
-        //0 MACCR: Ethernet MAC configuration register (rm page 1153)
+    struct register_map
+    {
+        // 0 MACCR: Ethernet MAC configuration register (rm page 1153)
         bit::register_base maccr;
-        //4 MACFFR: Ethernet MAC frame filter register (rm page 1177)
+        // 4 MACFFR: Ethernet MAC frame filter register (rm page 1177)
         bit::register_base macffr;
-        //8 MACHTHR: Ethernet MAC hash table high register (rm page 1178)
+        // 8 MACHTHR: Ethernet MAC hash table high register (rm page 1178)
         bit::register_base machthr;
-        //12 MACHTLR: Ethernet MAC hash table low register (rm page 1179)
+        // 12 MACHTLR: Ethernet MAC hash table low register (rm page 1179)
         bit::register_base machtlr;
-        //16 MACMIIAR: Ethernet MAC MII address register (rm page 1179)
+        // 16 MACMIIAR: Ethernet MAC MII address register (rm page 1179)
         bit::register_base macmiiar;
-        //20 MACMIIDR: Ethernet MAC MII data register (rm page 1180)
+        // 20 MACMIIDR: Ethernet MAC MII data register (rm page 1180)
         bit::register_base macmiidr;
-        //24 MACFCR: Ethernet MAC flow control register (rm page 1181)
+        // 24 MACFCR: Ethernet MAC flow control register (rm page 1181)
         bit::register_base macfcr;
-        //28 MACVLANTR: Ethernet MAC VLAN tag register (rm page 1182)
+        // 28 MACVLANTR: Ethernet MAC VLAN tag register (rm page 1182)
         bit::register_base macvlantr;
         uint8 zzzoffset0[12];
-        //44 MACPMTCSR: Ethernet MAC PMT control and status register (rm page 1184)
+        // 44 MACPMTCSR: Ethernet MAC PMT control and status register (rm page 1184)
         bit::register_base macpmtcsr;
         uint32 zzzoffset1;
-        //52 MACDBGR: Ethernet MAC debug register (rm page 1185)
+        // 52 MACDBGR: Ethernet MAC debug register (rm page 1185)
         bit::register_base macdbgr;
-        //56 MACSR: Ethernet MAC interrupt status register (rm page 1187)
+        // 56 MACSR: Ethernet MAC interrupt status register (rm page 1187)
         bit::register_base macsr;
-        //60 MACIMR: Ethernet MAC interrupt mask register (rm page 1188)
+        // 60 MACIMR: Ethernet MAC interrupt mask register (rm page 1188)
         bit::register_base macimr;
-        //64 MACA0HR: Ethernet MAC address 0 high register (rm page 1188)
+        // 64 MACA0HR: Ethernet MAC address 0 high register (rm page 1188)
         bit::register_base maca0hr;
-        //68 MACA0LR: Ethernet MAC address 0 low register (rm page 1189)
+        // 68 MACA0LR: Ethernet MAC address 0 low register (rm page 1189)
         bit::register_base maca0lr;
-        //72 MACA1HR: Ethernet MAC address 1 high register (rm page 1189)
+        // 72 MACA1HR: Ethernet MAC address 1 high register (rm page 1189)
         bit::register_base maca1hr;
-        //76 MACA1LR: Ethernet MAC address1 low register (rm page 1190)
+        // 76 MACA1LR: Ethernet MAC address1 low register (rm page 1190)
         bit::register_base maca1lr;
-        //80 MACA2HR: Ethernet MAC address 2 high register (rm page 1190)
+        // 80 MACA2HR: Ethernet MAC address 2 high register (rm page 1190)
         bit::register_base maca2hr;
-        //84 MACA2LR: Ethernet MAC address 2 low register (rm page 1191)
+        // 84 MACA2LR: Ethernet MAC address 2 low register (rm page 1191)
         bit::register_base maca2lr;
-        //88 MACA3HR: Ethernet MAC address 3 high register (rm page 1191)
+        // 88 MACA3HR: Ethernet MAC address 3 high register (rm page 1191)
         bit::register_base maca3hr;
-        //92 MACA3LR: Ethernet MAC address 3 low register (rm page 1192)
+        // 92 MACA3LR: Ethernet MAC address 3 low register (rm page 1192)
         bit::register_base maca3lr;
         uint8 zzzoffset2[160];
-        //256 MMCCR: Ethernet MMC control register (rm page 1193)
+        // 256 MMCCR: Ethernet MMC control register (rm page 1193)
         bit::register_base mmccr;
-        //260 MMCRIR: Ethernet MMC receive interrupt register (rm page 1193)
+        // 260 MMCRIR: Ethernet MMC receive interrupt register (rm page 1193)
         bit::register_base mmcrir;
-        //264 MMCTIR: Ethernet MMC transmit interrupt register (rm page 1194)
+        // 264 MMCTIR: Ethernet MMC transmit interrupt register (rm page 1194)
         bit::register_base mmctir;
-        //268 MMCRIMR: Ethernet MMC receive interrupt mask register (rm page 1195)
+        // 268 MMCRIMR: Ethernet MMC receive interrupt mask register (rm page 1195)
         bit::register_base mmcrimr;
-        //272 MMCTIMR: Ethernet MMC transmit interrupt mask register (rm page 1195)
+        // 272 MMCTIMR: Ethernet MMC transmit interrupt mask register (rm page 1195)
         bit::register_base mmctimr;
         uint8 zzzoffset3[56];
-        //332 MMCTGFSCCR: Ethernet MMC transmitted good frames after a single collision counter register (rm page 1196)
+        // 332 MMCTGFSCCR: Ethernet MMC transmitted good frames after a single collision counter register (rm page 1196)
         bit::register_base mmctgfsccr;
-        //336 MMCTGFMSCCR: Ethernet MMC transmitted good frames after more than a single collision counter register (rm page 1196)
+        // 336 MMCTGFMSCCR: Ethernet MMC transmitted good frames after more than a single collision counter register (rm page 1196)
         bit::register_base mmctgfmsccr;
         uint8 zzzoffset4[20];
-        //360 MMCTGFCR: Ethernet MMC transmitted good frames counter register (rm page 1197)
+        // 360 MMCTGFCR: Ethernet MMC transmitted good frames counter register (rm page 1197)
         bit::register_base mmctgfcr;
         uint8 zzzoffset5[40];
-        //404 MMCRFCECR: Ethernet MMC received frames with CRC error counter register (rm page 1197)
+        // 404 MMCRFCECR: Ethernet MMC received frames with CRC error counter register (rm page 1197)
         bit::register_base mmcrfcecr;
-        //408 MMCRFAECR: Ethernet MMC received frames with alignment error counter register (rm page 1197)
+        // 408 MMCRFAECR: Ethernet MMC received frames with alignment error counter register (rm page 1197)
         bit::register_base mmcrfaecr;
         uint8 zzzoffset6[40];
-        //452 MMCRGUFCR: MMC received good unicast frames counter register (rm page 1198)
+        // 452 MMCRGUFCR: MMC received good unicast frames counter register (rm page 1198)
         bit::register_base mmcrgufcr;
         uint8 zzzoffset7[1336];
-        //1792 PTPTSCR: Ethernet PTP time stamp control register (rm page 1198)
+        // 1792 PTPTSCR: Ethernet PTP time stamp control register (rm page 1198)
         bit::register_base ptptscr;
-        //1796 PTPSSIR: Ethernet PTP subsecond increment register (rm page 1200)
+        // 1796 PTPSSIR: Ethernet PTP subsecond increment register (rm page 1200)
         bit::register_base ptpssir;
-        //1800 PTPTSHR: Ethernet PTP time stamp high register (rm page 1201)
+        // 1800 PTPTSHR: Ethernet PTP time stamp high register (rm page 1201)
         bit::register_base ptptshr;
-        //1804 PTPTSLR: Ethernet PTP time stamp low register (rm page 1201)
+        // 1804 PTPTSLR: Ethernet PTP time stamp low register (rm page 1201)
         bit::register_base ptptslr;
-        //1808 PTPTSHUR: Ethernet PTP time stamp high update register (rm page 1201)
+        // 1808 PTPTSHUR: Ethernet PTP time stamp high update register (rm page 1201)
         bit::register_base ptptshur;
-        //1812 PTPTSLUR: TSUPNS             Ethernet PTP time stamp low update register (rm page 1203)
+        // 1812 PTPTSLUR: TSUPNS             Ethernet PTP time stamp low update register (rm page 1203)
         bit::register_base ptptslur;
-        //1816 PTPTSAR: Ethernet PTP time stamp addend register (rm page 1203)
+        // 1816 PTPTSAR: Ethernet PTP time stamp addend register (rm page 1203)
         bit::register_base ptptsar;
-        //1820 PTPTTHR: Ethernet PTP target time high register (rm page 1204)
+        // 1820 PTPTTHR: Ethernet PTP target time high register (rm page 1204)
         bit::register_base ptptthr;
-        //1824 PTPTTLR: Ethernet PTP target time low register (rm page 1204)
+        // 1824 PTPTTLR: Ethernet PTP target time low register (rm page 1204)
         bit::register_base ptpttlr;
         uint32 zzzoffset8;
-        //1832 PTPTSSR: Ethernet PTP time stamp status register (rm page 1204)
+        // 1832 PTPTSSR: Ethernet PTP time stamp status register (rm page 1204)
         bit::register_base ptptssr;
-        //1836 PTPPPSCR: Ethernet PTP PPS control register (rm page 1205)
+        // 1836 PTPPPSCR: Ethernet PTP PPS control register (rm page 1205)
         bit::register_base ptpppscr;
         uint8 zzzoffset9[2256];
-        //4096 DMABMR: Ethernet DMA bus mode register (rm page 1205)
+        // 4096 DMABMR: Ethernet DMA bus mode register (rm page 1205)
         bit::register_base dmabmr;
-        //4100 DMATPDR: Ethernet DMA transmit poll demand register (rm page 1207)
+        // 4100 DMATPDR: Ethernet DMA transmit poll demand register (rm page 1207)
         bit::register_base dmatpdr;
-        //4104 DMARPDR: EHERNET DMA receive poll demand register (rm page 1208)
+        // 4104 DMARPDR: EHERNET DMA receive poll demand register (rm page 1208)
         bit::register_base dmarpdr;
-        //4108 DMARDLAR: Ethernet DMA receive descriptor list address register (rm page 1208)
+        // 4108 DMARDLAR: Ethernet DMA receive descriptor list address register (rm page 1208)
         bit::register_base dmardlar;
-        //4112 DMATDLAR: Ethernet DMA transmit descriptor list address register (rm page 1209)
+        // 4112 DMATDLAR: Ethernet DMA transmit descriptor list address register (rm page 1209)
         bit::register_base dmatdlar;
-        //4116 DMASR: Ethernet DMA status register (rm page 1209)
+        // 4116 DMASR: Ethernet DMA status register (rm page 1209)
         bit::register_base dmasr;
-        //4120 DMAOMR: Ethernet DMA operation mode register (rm page 1212)
+        // 4120 DMAOMR: Ethernet DMA operation mode register (rm page 1212)
         bit::register_base dmaomr;
-        //4124 DMAIER: Ethernet DMA interrupt enable register (rm page 1215)
+        // 4124 DMAIER: Ethernet DMA interrupt enable register (rm page 1215)
         bit::register_base dmaier;
-        //4128 DMARSWTR: Ethernet DMA receive status watchdog timer register (rm page 1217)
+        // 4128 DMARSWTR: Ethernet DMA receive status watchdog timer register (rm page 1217)
         bit::register_base dmarswtr;
         uint8 zzzoffset11[32];
-        //4136 DMACHTDR: Ethernet DMA current host transmit descriptor register (rm page 1218)
+        // 4136 DMACHTDR: Ethernet DMA current host transmit descriptor register (rm page 1218)
         bit::register_base dmachtdr;
         // DMACHRDR: Ethernet DMA current host receive descriptor register (rm page 1218)
         bit::register_base dmachrdr;
@@ -723,16 +836,8 @@ namespace eth {
         bit::register_base dmachrbar;
     };
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ == 9
-
     extern "C" register_map __eth__device_0x40028000;
-    static auto& device = __eth__device_0x40028000;
-
-#else
-
-    static auto& device = util::reference<register_map, 0x40028000>::value;
-
-#endif
+    static auto &device = __eth__device_0x40028000;
 
 } // namespace eth
 

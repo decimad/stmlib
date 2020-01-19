@@ -4,10 +4,13 @@
 
 #include <stmlib/bits.hpp>
 
-namespace rcc { 
-    namespace fields {
+namespace rcc
+{
+    namespace fields
+    {
         // RCC clock control register [offset: 0x00, reset: 0x0000]
-        namespace cr {
+        namespace cr
+        {
             // PLLI2S clock ready flag (rm page 220)
             using plli2srdy = bit::field<27>;
             // PLLI2S enable (rm page 220)
@@ -32,9 +35,10 @@ namespace rcc {
             using hsirdy = bit::field<1>;
             // Internal high-speed clock enable (rm page 221)
             using hsion = bit::field<0>;
-        }
+        } // namespace cr
         // RCC PLL configuration register [offset: 0x04, reset: 0x2400 3010]
-        namespace pllcfgr {
+        namespace pllcfgr
+        {
             // Main PLL (PLL) division factor for USB OTG FS, SDIO and random number generator (rm page 222)
             using pllq = bit::field<27, 24>;
             // Main PLL(PLL) and audio PLL (PLLI2S) entry clock source (rm page 222)
@@ -45,9 +49,10 @@ namespace rcc {
             using plln = bit::field<14, 6>;
             // Division factor for the main PLL (PLL) and audio PLL (PLLI2S) input clock (rm page 223)
             using pllm = bit::field<5, 0>;
-        }
+        } // namespace pllcfgr
         // RCC clock configuration register [offset: 0x08, reset: 0x0000 0000]
-        namespace cfgr {
+        namespace cfgr
+        {
             // Microcontroller clock output 2 (rm page 224)
             using mco2 = bit::field<31, 30>;
             // MCO2 prescaler (rm page 224)
@@ -70,9 +75,10 @@ namespace rcc {
             using sws = bit::field<3, 2>;
             // System clock switch (rm page 226)
             using sw = bit::field<1, 0>;
-        }
+        } // namespace cfgr
         // RCC clock interrupt register [offset: 0x0C, reset: 0x0000 0000]
-        namespace cir {
+        namespace cir
+        {
             // Clock security system interrupt clear (rm page 227)
             using cssc = bit::field<23>;
             // PLLI2S ready interrupt clear (rm page 227)
@@ -113,9 +119,10 @@ namespace rcc {
             using lserdyf = bit::field<1>;
             // LSI ready interrupt flag (rm page 229)
             using lsirdyf = bit::field<0>;
-        }
+        } // namespace cir
         // RCC AHB1 peripheral reset register [offset: 0x10, reset: 0x0000 0000]
-        namespace ahb1rstr {
+        namespace ahb1rstr
+        {
             // USB OTG HS module reset (rm page 229)
             using otghsrst = bit::field<29>;
             // Ethernet MAC reset (rm page 229)
@@ -142,9 +149,10 @@ namespace rcc {
             using gpiobrst = bit::field<1>;
             // IO port A reset (rm page 231)
             using gpioarst = bit::field<0>;
-        }
+        } // namespace ahb1rstr
         // RCC AHB2 peripheral reset register [offset: 0x14, reset: 0x0000 0000]
-        namespace ahb2rstr {
+        namespace ahb2rstr
+        {
             // USB OTG FS module reset (rm page 232)
             using otgfsrst = bit::field<7>;
             // Random number generator module reset (rm page 232)
@@ -155,14 +163,16 @@ namespace rcc {
             using cryprst = bit::field<4>;
             // Camera interface reset (rm page 232)
             using dcmirst = bit::field<0>;
-        }
+        } // namespace ahb2rstr
         // RCC AHB3 peripheral reset register [offset: 0x18, reset: 0x0000 0000]
-        namespace ahb3rstr {
+        namespace ahb3rstr
+        {
             // Flexible static memory controller module reset (rm page 233)
             using fsmcrst = bit::field<0>;
-        }
+        } // namespace ahb3rstr
         // RCC APB1 peripheral reset register [offset: 0x20, reset: 0x0000 0000]
-        namespace apb1rstr {
+        namespace apb1rstr
+        {
             // DAC reset (rm page 233)
             using dacrst = bit::field<29>;
             // Power interface reset (rm page 233)
@@ -209,9 +219,10 @@ namespace rcc {
             using tim3rst = bit::field<1>;
             // TIM2 reset (rm page 235)
             using tim2rst = bit::field<0>;
-        }
+        } // namespace apb1rstr
         // RCC APB2 peripheral reset register [offset: 0x24, reset: 0x0000 0000]
-        namespace apb2rstr {
+        namespace apb2rstr
+        {
             // TIM11 reset (rm page 236)
             using tim11rst = bit::field<18>;
             // TIM10 reset (rm page 236)
@@ -234,9 +245,10 @@ namespace rcc {
             using tim8rst = bit::field<1>;
             // TIM1 reset (rm page 237)
             using tim1rst = bit::field<0>;
-        }
+        } // namespace apb2rstr
         // RCC AHB1 peripheral clock enable register [offset: 0x30, reset: 0x0010 0000]
-        namespace ahb1enr {
+        namespace ahb1enr
+        {
             // USB OTG HSULPI clock enable (rm page 238)
             using otghsulpien = bit::field<30>;
             // USB OTG HS clock enable (rm page 238)
@@ -277,9 +289,10 @@ namespace rcc {
             using gpioben = bit::field<1>;
             // IO port A clock enable (rm page 240)
             using gpioaen = bit::field<0>;
-        }
+        } // namespace ahb1enr
         // RCC AHB2 peripheral clock enable register [offset: 0x34, reset: 0x0000 0000]
-        namespace ahb2enr {
+        namespace ahb2enr
+        {
             // USB OTG FS clock enable (rm page 240)
             using otgfsen = bit::field<7>;
             // Random number generator clock enable (rm page 240)
@@ -290,14 +303,16 @@ namespace rcc {
             using crypen = bit::field<4>;
             // Camera interface enable (rm page 241)
             using dcmien = bit::field<0>;
-        }
+        } // namespace ahb2enr
         // RCC AHB3 peripheral clock enable register [offset: 0x38, reset: 0x0000 0000]
-        namespace ahb3enr {
+        namespace ahb3enr
+        {
             // Flexible static memory controller module clock enable (rm page 241)
             using fsmcen = bit::field<0>;
-        }
+        } // namespace ahb3enr
         // RCC APB1 peripheral clock enable register [offset: 0x40, reset: 0x0000 0000]
-        namespace apb1enr {
+        namespace apb1enr
+        {
             // DAC interface clock enable (rm page 242)
             using dacen = bit::field<29>;
             // Power interface clock enable (rm page 242)
@@ -344,9 +359,10 @@ namespace rcc {
             using tim3en = bit::field<1>;
             // TIM2 clock enable (rm page 244)
             using tim2en = bit::field<0>;
-        }
+        } // namespace apb1enr
         // RCC APB2 peripheral clock enable register [offset: 0x44, reset: 0x0000 0000]
-        namespace apb2enr {
+        namespace apb2enr
+        {
             // TIM11 clock enable (rm page 244)
             using tim11en = bit::field<18>;
             // TIM10 clock enable (rm page 244)
@@ -373,9 +389,10 @@ namespace rcc {
             using tim8en = bit::field<1>;
             // TIM1 clock enable (rm page 245)
             using tim1en = bit::field<0>;
-        }
+        } // namespace apb2enr
         // RCC AHB1 peripheral clock enable in low power mode register [offset: 0x50, reset: 0x7E67 91FF]
-        namespace ahb1lpenr {
+        namespace ahb1lpenr
+        {
             // USB OTG HS ULPI clock enable during Sleep mode (rm page 248)
             using otghsulpilpen = bit::field<30>;
             // USB OTG HS clock enable during Sleep mode (rm page 248)
@@ -418,9 +435,10 @@ namespace rcc {
             using gpioblpen = bit::field<1>;
             // IO port A clock enable during sleep mode (rm page 250)
             using gpioalpen = bit::field<0>;
-        }
+        } // namespace ahb1lpenr
         // RCC AHB2 peripheral clock enable in low power mode register [offset: 0x54, reset: 0x0000 00F1]
-        namespace ahb2lpenr {
+        namespace ahb2lpenr
+        {
             // USB OTG FS clock enable during Sleep mode (rm page 250)
             using otgfslpen = bit::field<7>;
             // Random number generator clock enable during Sleep mode (rm page 250)
@@ -431,14 +449,16 @@ namespace rcc {
             using cryplpen = bit::field<4>;
             // Camera interface enable during Sleep mode (rm page 251)
             using dcmilpen = bit::field<0>;
-        }
+        } // namespace ahb2lpenr
         // RCC AHB3 peripheral clock enable in low power mode register [offset: 0x58, reset: 0x0000 0001]
-        namespace ahb3lpenr {
+        namespace ahb3lpenr
+        {
             // Flexible static memory controller module clock enable during Sleep mode (rm page 251)
             using fsmclpen = bit::field<0>;
-        }
+        } // namespace ahb3lpenr
         // RCC APB1 peripheral clock enable in low power mode register [offset: 0x60, reset: 0x36FE C9FF]
-        namespace apb1lpenr {
+        namespace apb1lpenr
+        {
             // DAC interface clock enable during Sleep mode (rm page 252)
             using daclpen = bit::field<29>;
             // Power interface clock enable during Sleep mode (rm page 252)
@@ -485,9 +505,10 @@ namespace rcc {
             using tim3lpen = bit::field<1>;
             // TIM2 clock enable during Sleep mode (rm page 254)
             using tim2lpen = bit::field<0>;
-        }
+        } // namespace apb1lpenr
         // RCC APB2 peripheral clock enabled in low power mode register [offset: 0x64, reset: 0x0007 5F33]
-        namespace apb2lpenr {
+        namespace apb2lpenr
+        {
             // TIM11 clock enable during Sleep mode (rm page 255)
             using tim11lpen = bit::field<18>;
             // TIM10 clock enable during Sleep mode (rm page 255)
@@ -514,9 +535,10 @@ namespace rcc {
             using tim8lpen = bit::field<1>;
             // TIM1 clock enable during Sleep mode (rm page 256)
             using tim1lpen = bit::field<0>;
-        }
+        } // namespace apb2lpenr
         // RCC Backup domain control register [offset: 0x70, reset: 0x0000 0000]
-        namespace bdcr {
+        namespace bdcr
+        {
             // Backup domain software reset (rm page 257)
             using bdrst = bit::field<16>;
             // RTC clock enable (rm page 257)
@@ -529,9 +551,10 @@ namespace rcc {
             using lserdy = bit::field<1>;
             // External low-speed oscillator enable (rm page 258)
             using lseon = bit::field<0>;
-        }
+        } // namespace bdcr
         // RCC clock control & status register [offset: 0x74, reset: 0x0E00 0000]
-        namespace csr {
+        namespace csr
+        {
             // Low-power reset flag (rm page 258)
             using lpwrrstf = bit::field<31>;
             // Window watchdog reset flag (rm page 258)
@@ -552,9 +575,10 @@ namespace rcc {
             using lsirdy = bit::field<1>;
             // Internal low-speed oscillator enable (rm page 259)
             using lsion = bit::field<0>;
-        }
+        } // namespace csr
         // RCC spread spectrum clock generation register [offset: 0x80, reset: 0x0000 0000]
-        namespace sscgr {
+        namespace sscgr
+        {
             // Spread spectrum modulation enable (rm page 260)
             using sscgen = bit::field<31>;
             // Spread Select (rm page 260)
@@ -563,17 +587,19 @@ namespace rcc {
             using incstep = bit::field<27, 13>;
             // Modulation period (rm page 260)
             using modper = bit::field<12, 0>;
-        }
+        } // namespace sscgr
         // RCC PLLI2S configuration register [offset: 0x84, reset: 0x2000 3000]
-        namespace plli2scfgr {
+        namespace plli2scfgr
+        {
             // PLLI2S division factor for I2S clocks (rm page 261)
             using plli2sr = bit::field<30, 28>;
             // PLLI2S multiplication factor for VCO (rm page 262)
             using plli2sn = bit::field<14, 6>;
-        }
-    } // namespace fields
+        } // namespace plli2scfgr
+    }     // namespace fields
 
-    struct register_map {
+    struct register_map
+    {
         // CR: RCC clock control register (rm page 220)
         bit::register_base cr;
         // PLLCFGR: RCC PLL configuration register (rm page 222)
@@ -629,16 +655,8 @@ namespace rcc {
         bit::register_base plli2scfgr;
     };
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ == 9
-
     extern "C" register_map __rcc__device_0x40023800;
-    static auto& device = __rcc__device_0x40023800;
-
-#else
-
-    static auto& device = util::reference<register_map, 0x40023800>::value;
-
-#endif
+    static auto &device = __rcc__device_0x40023800;
 
 } // namespace rcc
 

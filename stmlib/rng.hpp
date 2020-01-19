@@ -4,13 +4,14 @@
 #ifdef __cplusplus
 #include <stmlib/stmtypes.hpp>
 
-namespace rng {
+namespace rng
+{
 
-	void start();
-	uint32 rand();
-	void stop();
+    void start();
+    uint32 rand();
+    void stop();
 
-}
+} // namespace rng
 #else
 
 void stm_rand_start(void);

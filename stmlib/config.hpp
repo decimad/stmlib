@@ -1,5 +1,5 @@
 #ifndef STMLIB_CONFIG_HPP__
-#define STMLIB_CONFIC_HPP__
+#define STMLIB_CONFIG_HPP__
 
 #include "stmlib_config.hpp"
 

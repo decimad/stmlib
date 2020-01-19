@@ -4,10 +4,13 @@
 
 #include <stmlib/bits.hpp>
 
-namespace flash {
-    namespace fields {
+namespace flash
+{
+    namespace fields
+    {
         // Flash access control register [offset: 0x00, reset: 0x0000 0000]
-        namespace acr {
+        namespace acr
+        {
             // Data cache reset (rm page 98)
             using dcrst = bit::field<12>;
             // Instruction cache reset (rm page 98)
@@ -20,19 +23,25 @@ namespace flash {
             using prften = bit::field<8>;
             // Latency (rm page 98)
             using latency = bit::field<2, 0>;
-        }
+        } // namespace acr
+
         // Flash key register [offset: 0x04, reset: 0x0000 0000]
-        namespace keyr {
+        namespace keyr
+        {
             // FPEC key (rm page 100)
             using fkeyr = bit::field<31, 0>;
-        }
+        } // namespace keyr
+
         // Flash option key register [offset: 0x08, reset: 0x0000 0000]
-        namespace optkeyr {
+        namespace optkeyr
+        {
             // Option byte key (rm page 100)
             using optkeyr = bit::field<31, 0>;
-        }
+        } // namespace optkeyr
+
         // Flash status register [offset: 0x0C, reset: 0x0000 0000]
-        namespace sr {
+        namespace sr
+        {
             // Busy (rm page 101)
             using bsy = bit::field<16>;
             // Programming sequence error (rm page 101)
@@ -47,9 +56,11 @@ namespace flash {
             using operr = bit::field<1>;
             // End of operation (rm page 101)
             using eop = bit::field<0>;
-        }
+        } // namespace sr
+
         // Flash control register [offset: 0x10, reset: 0x8000 0000]
-        namespace cr {
+        namespace cr
+        {
             // Lock (rm page 103)
             using lock = bit::field<31>;
             // Error interrupt enable (rm page 103)
@@ -68,9 +79,11 @@ namespace flash {
             using ser = bit::field<1>;
             // Programming (rm page 104)
             using pg = bit::field<0>;
-        }
+        } // namespace cr
+
         // Flash option control register [offset: 0x14, reset: 0x0FFF AAED]
-        namespace optcr {
+        namespace optcr
+        {
             // Not write protect (rm page 106)
             using nwrp = bit::field<27, 16>;
             // Read protect (rm page 106)
@@ -83,10 +96,11 @@ namespace flash {
             using optstrt = bit::field<1>;
             // Option lock (rm page 106)
             using optlock = bit::field<0>;
-        }
-    } // namespace fields
+        } // namespace optcr
+    }     // namespace fields
 
-    struct register_map {
+    struct register_map
+    {
         // ACR: Flash access control register (rm page 97)
         bit::bitband_register<0x40023c00> acr;
         // KEYR: Flash key register (rm page 99)
@@ -102,8 +116,7 @@ namespace flash {
     };
 
     extern "C" register_map __flash__device_0x40023c00;
-    static auto& device = __flash__device_0x40023c00;
-
+    static auto &device = __flash__device_0x40023c00;
 
 } // namespace flash
 

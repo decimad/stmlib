@@ -15,19 +15,19 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void trace_init();
+    void trace_init();
 
-void trace_write( unsigned char port, const char* data, unsigned int size );
+    void trace_write(unsigned char port, const char *data, unsigned int size);
 
-int trace_printf( unsigned char port, const char* fmt, ... );	// From normal thread code
-int trace_printf_i( unsigned char port, const char* fmt, ... );	// From interrupt service routines
+    int trace_printf(unsigned char port, const char *fmt, ...);   // From normal thread code
+    int trace_printf_i(unsigned char port, const char *fmt, ...); // From interrupt service routines
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* INCLUDE_STM_TRACE_H_ */
