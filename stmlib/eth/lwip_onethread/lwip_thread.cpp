@@ -282,7 +282,7 @@ namespace eth::lwip
         chSysLock();
         auto ptr = message_pool_.make();
         chSysUnlock();
-        return std::move(ptr);
+        return ptr;
     }
 
     LwipThread::message_ptr LwipThread::acquire_message_i()
@@ -377,7 +377,7 @@ namespace eth::lwip
         init_ptp();
 #endif
 
-        bool dhcp_bound = false;
+        //bool dhcp_bound = false;
 
         while (true)
         {
