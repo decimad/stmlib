@@ -69,8 +69,8 @@ namespace drivers::dp83640
     {
         unsigned char sign = (adjust < 0) ? 1 : 0;
         unsigned int val = (adjust < 0) ? -adjust : adjust;
-        eth::phy::write<registers::ptp_rateh>(1, fields::ptp_rateh::ptp_rage_dir(sign) | fields::ptp_rateh::ptp_rate_hi(adjust >> 16));
-        eth::phy::write<registers::ptp_ratel>(1, fields::ptp_rateh::ptp_rate_hi(adjust));
+        eth::phy::write<registers::ptp_rateh>(1, fields::ptp_rateh::ptp_rage_dir(sign) | fields::ptp_rateh::ptp_rate_hi(val >> 16));
+        eth::phy::write<registers::ptp_ratel>(1, fields::ptp_ratel::ptp_rate_lo(val));
     }
 
     void set_output_clock(uint32 clock, eth::phy::callback_type completion_callback)
