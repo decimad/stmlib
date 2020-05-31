@@ -13,14 +13,6 @@
 
 namespace gpio
 {
-
-    namespace detail
-    {
-        inline void func(...)
-        {
-        }
-    } // namespace detail
-
     namespace reg_detail
     {
 
@@ -158,7 +150,7 @@ namespace gpio
         template <typename... Args>
         void configure(const Args &... args)
         {
-            detail::func((Args::run_dynamic(*this, args), 0)...);
+            (Args::run_dynamic(*this, args), ...);
         }
 
       private:
@@ -215,42 +207,42 @@ namespace gpio
 
         if (deprecated::get<port_array, 0>::value != 0)
         {
-            detail::func((Args::template run_static<0, deprecated::get<port_array, 0>::value>(args), 0)...);
+            (Args::template run_static<0, deprecated::get<port_array, 0>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 1>::value != 0)
         {
-            detail::func((Args::template run_static<1, deprecated::get<port_array, 1>::value>(args), 0)...);
+            (Args::template run_static<1, deprecated::get<port_array, 1>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 2>::value != 0)
         {
-            detail::func((Args::template run_static<2, deprecated::get<port_array, 2>::value>(args), 0)...);
+            (Args::template run_static<2, deprecated::get<port_array, 2>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 3>::value != 0)
         {
-            detail::func((Args::template run_static<3, deprecated::get<port_array, 3>::value>(args), 0)...);
+            (Args::template run_static<3, deprecated::get<port_array, 3>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 4>::value != 0)
         {
-            detail::func((Args::template run_static<4, deprecated::get<port_array, 4>::value>(args), 0)...);
+            (Args::template run_static<4, deprecated::get<port_array, 4>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 5>::value != 0)
         {
-            detail::func((Args::template run_static<5, deprecated::get<port_array, 5>::value>(args), 0)...);
+            (Args::template run_static<5, deprecated::get<port_array, 5>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 6>::value != 0)
         {
-            detail::func((Args::template run_static<6, deprecated::get<port_array, 6>::value>(args), 0)...);
+            (Args::template run_static<6, deprecated::get<port_array, 6>::value>(args), ...);
         }
 
         if (deprecated::get<port_array, 7>::value != 0)
         {
-            detail::func((Args::template run_static<7, deprecated::get<port_array, 7>::value>(args), 0)...);
+            (Args::template run_static<7, deprecated::get<port_array, 7>::value>(args), ...);
         }
     }
 
