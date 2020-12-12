@@ -8,7 +8,7 @@
 #ifndef GPIO_HPP_
 #define GPIO_HPP_
 
-#include <microlib/meta_array.hpp>
+#include <microlib/meta_vlist.hpp>
 #include <stmlib/bits.hpp>
 
 namespace gpio
@@ -30,41 +30,40 @@ namespace gpio
             reg lckr;
             reg afrl;
             reg afrh;
-            // reg optcr1; only F42X andF43X
+            reg optcr1;  // only F42X andF43X
         };
+
+        constexpr uint32 port_base_address(uint8 port)
+        {
+            return 0x40020000 + port * 0x400;
+        }
 
     } // namespace reg_detail
 
+
     inline reg_detail::gpio_regs &port_ref(uint8 port)
     {
-        return *reinterpret_cast<reg_detail::gpio_regs *>(0x40020000 + port * 0x400);
+        return *reinterpret_cast<reg_detail::gpio_regs *>(reg_detail::port_base_address(port));
     }
 
-    extern "C" reg_detail::gpio_regs __gpio__porta_0x40020000;
-    extern "C" reg_detail::gpio_regs __gpio__portb_0x40020400;
-    extern "C" reg_detail::gpio_regs __gpio__portc_0x40020800;
-    extern "C" reg_detail::gpio_regs __gpio__portd_0x40020C00;
-    extern "C" reg_detail::gpio_regs __gpio__porte_0x40021000;
-    extern "C" reg_detail::gpio_regs __gpio__portf_0x40021400;
-    extern "C" reg_detail::gpio_regs __gpio__portg_0x40021800;
-    extern "C" reg_detail::gpio_regs __gpio__porth_0x40021C00;
-    extern "C" reg_detail::gpio_regs __gpio__porti_0x40022000;
-
-    static auto &porta = __gpio__porta_0x40020000;
-    static auto &portb = __gpio__portb_0x40020400;
-    static auto &portc = __gpio__portc_0x40020800;
-    static auto &portd = __gpio__portd_0x40020C00;
-    static auto &porte = __gpio__porte_0x40021000;
-    static auto &portf = __gpio__portf_0x40021400;
-    static auto &portg = __gpio__portg_0x40021800;
-    static auto &porth = __gpio__porth_0x40021C00;
-    static auto &porti = __gpio__porti_0x40022000;
+    static auto& porta [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(0));
+    static auto& portb [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(1));
+    static auto& portc [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(2));
+    static auto& portd [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(3));
+    static auto& porte [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(4));
+    static auto& portf [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(5));
+    static auto& portg [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(6));
+    static auto& porth [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(7));
+    static auto& porti [[maybe_unused]] = *(reg_detail::gpio_regs*)(reg_detail::port_base_address(8));
 
     template <uint8 port, uint8... pins>
     struct port_pack
     {
     };
 
+    //! \brief Compile time fixed GPIO pin object
+    //! \param port   Port index [0 .. 8] for ports [a .. i]
+    //! \param pin    Pin index [0 .. 15]
     template <uint8 port, uint8 index>
     struct static_pin
     {
@@ -99,34 +98,40 @@ namespace gpio
         }
     };
 
-    class pin_ref
+    //! \brief Runtime dynamic GPIO pin object
+    class dynamic_pin
     {
       public:
+        //! Assign GPIO pin reference from compile time static pin
         template <uint8 Port, uint8 Pin>
-        constexpr pin_ref(const static_pin<Port, Pin> &) : port_(Port), pin_(Pin)
+        constexpr dynamic_pin(const static_pin<Port, Pin> &) : port_(Port), pin_(Pin)
         {
         }
 
-        constexpr pin_ref(uint8 port__, uint8 pin__) : port_(port__), pin_(pin__)
+        constexpr dynamic_pin(uint8 port__, uint8 pin__) : port_(port__), pin_(pin__)
         {
         }
 
+        // Fixme: compare assembly with plain 'assign' and see if we need two functions for this
         void atomic_assign(bool value)
         {
-            port_ref(port_).bsrr = (((!value) & 1) << pin_) | ((value & 1) << (pin_ + 16));
+            port_ref(port_).bsrr = ((value ^ 1) << pin_) | (value << (pin_ + 16));
         }
 
+        // Fixme, see 'atomic_assign'
         void assign(bool value)
         {
             auto &ref = port_ref(port_).odr;
             ref = (ref & (~static_cast<uint32>(1 << pin_))) | ((value & 1) << pin_);
         }
 
+        //! Set GPO pin
         void set()
         {
             port_ref(port_).bsrr = 1 << (pin_ + 16);
         }
 
+        //! Clear GPO pin
         void reset()
         {
             port_ref(port_).bsrr = 1 << pin_;
@@ -165,84 +170,87 @@ namespace gpio
 
     namespace detail
     {
-        template <typename Array, typename... pins>
+        using namespace ulib::meta;
+        using concepts::ValueList;
+
+        template <ValueList Array, typename... pins>
         struct port_array_from_pins;
 
-        template <typename Array, uint8 port, uint8 pin, typename... tail>
+        template <ValueList Array, uint8 port, uint8 pin, typename... tail>
         struct port_array_from_pins<Array, static_pin<port, pin>, tail...>
         {
             using type = typename port_array_from_pins<
-                typename ulib::meta::deprecated::set<
-                    Array, port, ulib::meta::deprecated::get<Array, port>::value | (static_cast<uint16>(1) << pin)>::type,
-                tail...>::type;
+                value_list::set<Array, port, value_list::get<Array, port> | (static_cast<uint16>(1) << pin)>,
+                tail...
+            >::type;
         };
 
         // translate port_pack<> and pin_list<> into a plain list of pins
-        template <typename Array, uint8 port, uint8... pins, typename... tail>
+        template <ValueList Array, uint8 port, uint8... pins, typename... tail>
         struct port_array_from_pins<Array, port_pack<port, pins...>, tail...>
         {
             using type = typename port_array_from_pins<Array, static_pin<port, pins>..., tail...>::type;
         };
 
-        template <typename Array, typename... pins, typename... tail>
+        template <ValueList Array, typename... pins, typename... tail>
         struct port_array_from_pins<Array, pin_list<pins...>, tail...>
         {
             using type = typename port_array_from_pins<Array, pins..., tail...>::type;
         };
 
-        template <typename Array>
+        template <ValueList Array>
         struct port_array_from_pins<Array>
         {
             using type = Array;
         };
 
-        using empty_port_array = ulib::meta::deprecated::array<uint16, 0, 0, 0, 0, 0, 0, 0, 0>;
+        using empty_port_array = ulib::meta::vlist<uint16, 0, 0, 0, 0, 0, 0, 0, 0>;
     } // namespace detail
 
     template <typename... PinsListPack, typename... Args>
     void configure(const Args &... args)
     {
-        using port_array = typename detail::port_array_from_pins<detail::empty_port_array, PinsListPack...>::type;
         using namespace ulib::meta;
+        using port_array = typename detail::port_array_from_pins<detail::empty_port_array, PinsListPack...>::type;
 
-        if (deprecated::get<port_array, 0>::value != 0)
+        if constexpr (value_list::get<port_array, 0> != 0)
         {
-            (Args::template run_static<0, deprecated::get<port_array, 0>::value>(args), ...);
+            (Args::template run_static<0, value_list::get<port_array, 0>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 1>::value != 0)
+        if constexpr (value_list::get<port_array, 1> != 0)
         {
-            (Args::template run_static<1, deprecated::get<port_array, 1>::value>(args), ...);
+            (Args::template run_static<1, value_list::get<port_array, 1>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 2>::value != 0)
+        if constexpr (value_list::get<port_array, 2> != 0)
         {
-            (Args::template run_static<2, deprecated::get<port_array, 2>::value>(args), ...);
+            (Args::template run_static<2, value_list::get<port_array, 2>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 3>::value != 0)
+        if constexpr (value_list::get<port_array, 3> != 0)
         {
-            (Args::template run_static<3, deprecated::get<port_array, 3>::value>(args), ...);
+            (Args::template run_static<3, value_list::get<port_array, 3>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 4>::value != 0)
+        if constexpr (value_list::get<port_array, 4> != 0)
         {
-            (Args::template run_static<4, deprecated::get<port_array, 4>::value>(args), ...);
+            (Args::template run_static<4, value_list::get<port_array, 4>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 5>::value != 0)
+        if constexpr (value_list::get<port_array, 5> != 0)
         {
-            (Args::template run_static<5, deprecated::get<port_array, 5>::value>(args), ...);
+            (Args::template run_static<5, value_list::get<port_array, 5>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 6>::value != 0)
+        if constexpr (value_list::get<port_array, 6> != 0)
         {
-            (Args::template run_static<6, deprecated::get<port_array, 6>::value>(args), ...);
+            (Args::template run_static<6, value_list::get<port_array, 6>>(args), ...);
         }
 
-        if (deprecated::get<port_array, 7>::value != 0)
+        if constexpr (value_list::get<port_array, 7> != 0)
         {
-            (Args::template run_static<7, deprecated::get<port_array, 7>::value>(args), ...);
+            (Args::template run_static<7, value_list::get<port_array, 7>>(args), ...);
         }
     }
 
@@ -299,7 +307,7 @@ namespace gpio
             port.ospeedr <<= bit::replicate_masked<2, 16, pinflags>(static_cast<uint8>(config.speed));
         }
 
-        static void run_dynamic(const pin_ref &p, const alternate_output &config)
+        static void run_dynamic(const dynamic_pin &p, const alternate_output &config)
         {
             using namespace reg_detail;
             auto &port = port_ref(p.port());
@@ -339,7 +347,7 @@ namespace gpio
             port.moder <<= bit::replicate_masked<2, 16, pinflags>(2); // alternate mode
         }
 
-        static void run_dynamic(const pin_ref &p, const alternate_input &config)
+        static void run_dynamic(const dynamic_pin &p, const alternate_input &config)
         {
             using namespace reg_detail;
             auto &port = port_ref(p.port());
@@ -373,7 +381,7 @@ namespace gpio
             port.moder <<= bit::replicate_masked<2, 16, pinflags>(0);
         }
 
-        static void run_dynamic(const pin_ref &p, const input_struct &mode)
+        static void run_dynamic(const dynamic_pin &p, const input_struct &mode)
         {
             (void)mode;
 
@@ -384,7 +392,7 @@ namespace gpio
         }
     };
 
-    const input_struct input;
+    [[maybe_unused]] const input_struct  input;
 
     // Output maps to output + push&pull
     struct output
@@ -404,7 +412,7 @@ namespace gpio
             port.ospeedr <<= bit::replicate_masked<2, 16, pinflags>(static_cast<uint8>(config.speed));
         }
 
-        static void run_dynamic(const pin_ref &p, const output &config)
+        static void run_dynamic(const dynamic_pin &p, const output &config)
         {
             using namespace reg_detail;
             auto &port = port_ref(p.port());
@@ -435,7 +443,7 @@ namespace gpio
             port.pupdr <<= bit::replicate_masked<2, 16, pinflags>(static_cast<uint8>(Resistor::PullUp));
         }
 
-        static void run_dynamic(const pin_ref &p, const pull_up &config)
+        static void run_dynamic(const dynamic_pin &p, const pull_up &config)
         {
             (void)config;
 
@@ -464,7 +472,7 @@ namespace gpio
             port.ospeedr <<= bit::replicate_masked<2, 16, pinflags>(static_cast<uint8>(config.speed));
         }
 
-        static void run_dynamic(const pin_ref &p, const inout &config)
+        static void run_dynamic(const dynamic_pin &p, const inout &config)
         {
             using namespace reg_detail;
             auto &port = port_ref(p.port());
@@ -477,6 +485,55 @@ namespace gpio
 
         Speed speed;
     };
+
+    template< typename Pad, AlternateMode mode, OutputType type = OutputType::PushPull, Speed speed = Speed::Slow, Resistor resistor = Resistor::None >
+    struct static_altout_config {
+        void init()
+        {
+            configure<Pad>(alternate_output(mode, type, speed), pull_up(resistor));
+        }
+    };
+
+    template< typename Pad, AlternateMode mode, Resistor resistor = Resistor::None >
+    struct static_altin_config {
+        void init()
+        {
+            configure<Pad>(alternate_input(mode), pull_up(resistor));
+        }
+    };
+
+    template< typename Pad, Speed speed = Speed::Slow, Resistor resistor = Resistor::None >
+    struct static_gpo_config {
+        void init()
+        {
+            configure<Pad>(output(speed), pull_up(resistor));
+        }
+
+        static void set(bool value)
+        {
+            Pad::set(value);
+        }
+
+        static bool get()
+        {
+            return Pad::get();
+        }
+    };
+
+    template< typename Pad, Resistor resistor = Resistor::None >
+    struct static_gpi_config {
+        static void init()
+        {
+            configure<Pad>(input, pull_up(resistor));
+        }
+
+        static void get()
+        {
+            Pad::get();
+        }
+    };
+
+
 
     // analog maps to analog
 

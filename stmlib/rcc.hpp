@@ -8,6 +8,7 @@
 #ifndef RCC_HPP_
 #define RCC_HPP_
 
+#include "microlib/meta_vlist.hpp"
 #define RCC_USE_GPIO true
 
 #include <stmlib/bits.hpp>
@@ -27,6 +28,20 @@ namespace rcc
 {
 
 #if RCC_USE_GPIO
+/* The RCC can take care of enabling the GPIO peripheral clocks given a list of pins */
+
+    namespace {
+
+        template<uint32 Mask = 0>
+        struct BuildMask {
+            template<size_t Index, size_t PortMask>
+            using run = BuildMask<Mask | (PortMask != 0 ? (1 << Index) : 0)>;
+
+            static constexpr uint32 value = Mask;
+        };
+
+    }
+
     template <typename... PinsListPack>
     void enable_gpio()
     {
@@ -34,52 +49,13 @@ namespace rcc
         using port_array = typename gpio::detail::port_array_from_pins<gpio::detail::empty_port_array, PinsListPack...>::type;
         using namespace ulib::meta;
 
-        uint32 mask = 0;
-
-        if (deprecated::get<port_array, 0>::value != 0)
-        {
-            mask |= 1 << 0;
-        }
-
-        if (deprecated::get<port_array, 1>::value != 0)
-        {
-            mask |= 1 << 1;
-        }
-
-        if (deprecated::get<port_array, 2>::value != 0)
-        {
-            mask |= 1 << 2;
-        }
-
-        if (deprecated::get<port_array, 3>::value != 0)
-        {
-            mask |= 1 << 3;
-        }
-
-        if (deprecated::get<port_array, 4>::value != 0)
-        {
-            mask |= 1 << 4;
-        }
-
-        if (deprecated::get<port_array, 5>::value != 0)
-        {
-            mask |= 1 << 5;
-        }
-
-        if (deprecated::get<port_array, 6>::value != 0)
-        {
-            mask |= 1 << 6;
-        }
-
-        if (deprecated::get<port_array, 7>::value != 0)
-        {
-            mask |= 1 << 7;
-        }
+        const uint32 mask = value_list::for_each_t<port_array, BuildMask<>>::type::value;
 
         // rcc base 0x4002 3800
         // register offset 0x30
         device.ahb1enr |= mask;
     }
+
 #endif
 
     template <unsigned int source_clock, unsigned int target_clock, unsigned int system_tick = 1000>
